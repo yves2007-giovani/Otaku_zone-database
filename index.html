@@ -3,244 +3,230 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080808">
+<meta name="theme-color" content="#000000">
 <title>OTAKU_ZONE</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
-header{text-align:center;padding:24px 12px;background:#111;border-bottom:2px solid #d4af37}
-h1{color:#d4af37;margin:0;letter-spacing:2px}
-header p{color:#aaa}
-main{max-width:1100px;margin:auto;padding:16px}
-.search{display:flex;gap:8px}
-input,button{background:#181818;color:white;border:1px solid #d4af37;border-radius:8px;padding:12px}
-input{width:100%;min-width:0}
-button{cursor:pointer}
-button.active{background:#d4af37;color:#000}
-#status,#episodeInfo{color:#d4af37;font-size:14px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:#151515;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid #292929}
-.card img,.poster{width:100%;height:190px;object-fit:cover}
-.poster{display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;color:#d4af37;font-weight:bold}
-.card h3{font-size:14px;padding:10px;margin:0}
-#details{margin-top:22px;padding:14px;background:#121212;border:1px solid #333;border-radius:12px}
+body{margin:0;background:#080808;color:#fff;font-family:Arial,sans-serif}
+header{padding:20px;text-align:center;border-bottom:2px solid #d4af37}
+h1{color:#d4af37;margin:0 0 15px}
+input,button{padding:12px;border-radius:7px;border:1px solid #d4af37}
+input{width:100%;background:#171717;color:white}
+button{background:#d4af37;color:#000;font-weight:bold;cursor:pointer;margin:4px}
+main{padding:15px;max-width:1000px;margin:auto}
+#catalogue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.card{background:#171717;padding:10px;border-radius:9px;cursor:pointer}
+.card img{width:100%;height:220px;object-fit:cover;border-radius:6px}
+.card h3{font-size:14px}
+#details{margin-top:20px}
+#episodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+#episodes button{margin:0;padding:10px 3px}
+video{width:100%;max-height:450px;background:#000;margin-top:12px}
+a{color:#d4af37}
 .hidden{display:none}
-#seasons{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.episodes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-.episodes button{padding:12px 3px}
-video{width:100%;max-height:450px;background:#000;margin-top:15px}
 @media(min-width:650px){
-.grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-.card img,.poster{height:240px}
-.episodes{grid-template-columns:repeat(8,minmax(0,1fr))}
+#catalogue{grid-template-columns:repeat(5,minmax(0,1fr))}
+#episodes{grid-template-columns:repeat(8,minmax(0,1fr))}
 }
 </style>
 </head>
+
 <body>
 <header>
 <h1>OTAKU_ZONE</h1>
-<p>Ton univers anime</p>
+<input id="search" placeholder="Rechercher un animé..." autocomplete="off">
+<button onclick="searchAnime()">RECHERCHER</button>
 </header>
+
 <main>
-<div class="search">
-<input id="search" placeholder="Rechercher un anime...">
-<button id="searchBtn">OK</button>
-</div>
-<p id="status">Chargement du catalogue...</p>
-<div id="catalog" class="grid"></div>
+<div id="message"></div>
+<div id="catalogue"></div>
 
 <section id="details" class="hidden">
 <h2 id="animeTitle"></h2>
-<p id="animeInfo"></p>
-<h3>Saisons</h3>
 <div id="seasons"></div>
 <h3>Épisodes</h3>
-<div id="episodes" class="episodes"></div>
-<p id="episodeInfo"></p>
-<video id="player" controls playsinline preload="metadata"></video>
+<div id="episodes"></div>
+
+<video id="player" controls playsinline></video>
+<p id="videoMessage"></p>
+<a id="download" class="hidden" href="#" download>Télécharger l'épisode</a>
 </section>
 </main>
 
 <script>
 const API="https://graphql.anilist.co";
-const DB="https://raw.githubusercontent.com/yves2007-giovani/Otaku_zone-database/main/episodes.json";
-const $=id=>document.getElementById(id);
-let animes=[],database=[],currentAnime=null;
+const JSON_URL="https://raw.githubusercontent.com/yves2007-giovani/Otaku_zone-database/main/episodes.json";
 
-function titleOf(a){
- return a.title?.english||a.title?.romaji||a.title?.native||a.title||"Anime";
-}
-
-async function api(query,variables={}){
- const r=await fetch(API,{
-  method:"POST",
-  headers:{"Content-Type":"application/json","Accept":"application/json"},
-  body:JSON.stringify({query,variables})
- });
- if(!r.ok)throw Error("AniList HTTP "+r.status);
- const d=await r.json();
- if(d.errors)throw Error(d.errors[0].message);
- return d.data;
-}
+let database={animes:[]};
+let currentAnime=null;
+let currentSeason=null;
 
 async function loadDatabase(){
- try{
-  const r=await fetch(DB+"?t="+Date.now());
-  if(!r.ok)throw Error("JSON inaccessible");
-  const d=await r.json();
-  database=Array.isArray(d.animes)?d.animes:[];
- }catch(e){
-  console.error("Base locale:",e);
- }
-}
-
-async function loadCatalog(search=""){
- $("status").textContent="Chargement...";
- $("catalog").innerHTML="";
- try{
-  const q=`query($search:String){
-   Page(page:1,perPage:30){
-    media(type:ANIME,isAdult:false,search:$search,sort:POPULARITY_DESC){
-     id episodes seasonYear
-     title{romaji english native}
-     coverImage{large}
-     description(asHtml:false)
-    }
-   }
-  }`;
-  const d=await api(q,{search:search||null});
-  animes=d.Page.media;
-  renderCatalog(animes);
- }catch(e){
-  console.error(e);
-  $("status").textContent="Erreur de connexion à AniList. Réessaie.";
- }
-}
-
-function renderCatalog(list){
- $("catalog").innerHTML="";
- $("status").textContent=list.length+" anime(s)";
- if(!list.length)$("status").textContent="Aucun anime trouvé.";
- list.forEach(a=>{
-  const card=document.createElement("article");
-  card.className="card";
-  const img=document.createElement("img");
-  img.src=a.coverImage?.large||"";
-  img.alt=titleOf(a);
-  img.loading="lazy";
-  img.onerror=()=>{
-   const p=document.createElement("div");
-   p.className="poster";
-   p.textContent=titleOf(a);
-   img.replaceWith(p);
-  };
-  card.appendChild(img);
-  const h=document.createElement("h3");
-  h.textContent=titleOf(a);
-  card.appendChild(h);
-  card.onclick=()=>openAnime(a);
-  $("catalog").appendChild(card);
- });
-}
-
-function findLocal(a){
- return database.find(x=>Number(x.anilistId)===Number(a.id))||
- database.find(x=>String(x.title||"").toLowerCase()===titleOf(a).toLowerCase());
-}
-
-function openAnime(a){
- currentAnime=a;
- $("details").classList.remove("hidden");
- $("details").scrollIntoView({behavior:"smooth"});
- $("animeTitle").textContent=titleOf(a);
- $("animeInfo").textContent="Année : "+(a.seasonYear||"inconnue")+
- " | Épisodes : "+(a.episodes||"inconnu");
- $("seasons").innerHTML="";
- $("episodes").innerHTML="";
- $("episodeInfo").textContent="";
- $("player").pause();
- $("player").removeAttribute("src");
- $("player").load();
-
- const local=findLocal(a);
- if(local&&Array.isArray(local.seasons)&&local.seasons.length){
-  local.seasons.forEach((s,i)=>{
-   const b=document.createElement("button");
-   b.textContent=s.title||"Saison "+s.number;
-   b.onclick=()=>showEpisodes(s,b);
-   $("seasons").appendChild(b);
-   if(i===0)showEpisodes(s,b);
-  });
- }else{
-  const s={number:1,title:"Saison 1",episodes:[]};
-  for(let i=1;i<=Number(a.episodes||0);i++){
-   s.episodes.push({number:i,title:"Épisode "+i,url:""});
+  try{
+    const response=await fetch(JSON_URL+"?t="+Date.now());
+    if(!response.ok) throw new Error();
+    database=await response.json();
+  }catch(e){
+    database={animes:[]};
+    document.getElementById("message").textContent=
+      "Impossible de charger episodes.json.";
   }
-  const b=document.createElement("button");
-  b.textContent="Saison 1";
-  $("seasons").appendChild(b);
-  showEpisodes(s,b);
- }
 }
 
-function showEpisodes(s,button){
- document.querySelectorAll("#seasons button").forEach(b=>b.classList.remove("active"));
- if(button)button.classList.add("active");
- $("episodes").innerHTML="";
- $("episodeInfo").textContent="";
+async function searchAnime(){
+  const query=document.getElementById("search").value.trim();
+  if(!query)return;
 
- (s.episodes||[]).forEach(ep=>{
-  const b=document.createElement("button");
-  b.textContent=ep.number;
-  b.title=ep.title||"Épisode "+ep.number;
-  b.onclick=()=>playEpisode(ep);
-  $("episodes").appendChild(b);
- });
+  const catalogue=document.getElementById("catalogue");
+  catalogue.innerHTML="Recherche en cours...";
+  document.getElementById("details").classList.add("hidden");
+
+  try{
+    const response=await fetch(API,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        query:`query ($search:String) {
+          Page(page:1,perPage:20) {
+            media(search:$search,type:ANIME,sort:POPULARITY_DESC) {
+              id
+              title { romaji english }
+              coverImage { large }
+              episodes
+              description(asHtml:false)
+            }
+          }
+        }`,
+        variables:{search:query}
+      })
+    });
+
+    const data=await response.json();
+    const animes=data.data.Page.media;
+    catalogue.innerHTML="";
+
+    if(!animes.length){
+      catalogue.textContent="Aucun animé trouvé.";
+      return;
+    }
+
+    animes.forEach(anime=>{
+      const card=document.createElement("div");
+      card.className="card";
+
+      const img=document.createElement("img");
+      img.src=anime.coverImage.large;
+      img.alt="Affiche de "+(anime.title.english||anime.title.romaji);
+
+      const title=document.createElement("h3");
+      title.textContent=anime.title.english||anime.title.romaji;
+
+      card.append(img,title);
+      card.onclick=()=>openAnime(anime);
+      catalogue.appendChild(card);
+    });
+  }catch(e){
+    catalogue.textContent="Erreur de connexion. Réessaie.";
+  }
+}
+
+function openAnime(anime){
+  currentAnime=anime;
+  currentSeason=null;
+
+  document.getElementById("details").classList.remove("hidden");
+  document.getElementById("animeTitle").textContent=
+    anime.title.english||anime.title.romaji;
+
+  const saved=database.animes.find(a=>
+    Number(a.anilistId)===Number(anime.id)
+  );
+
+  const seasons=document.getElementById("seasons");
+  seasons.innerHTML="";
+
+  if(!saved||!saved.seasons||!saved.seasons.length){
+    seasons.textContent=
+      "Aucun épisode enregistré pour cet animé dans episodes.json.";
+    document.getElementById("episodes").innerHTML="";
+    stopPlayer();
+    return;
+  }
+
+  saved.seasons.forEach(season=>{
+    const btn=document.createElement("button");
+    btn.textContent=season.title||"Saison "+season.number;
+    btn.onclick=()=>showSeason(saved,season);
+    seasons.appendChild(btn);
+  });
+
+  showSeason(saved,saved.seasons[0]);
+}
+
+function showSeason(anime,season){
+  currentAnime=anime;
+  currentSeason=season;
+
+  const grid=document.getElementById("episodes");
+  grid.innerHTML="";
+
+  (season.episodes||[]).forEach(ep=>{
+    const btn=document.createElement("button");
+    btn.textContent="Ép. "+ep.number;
+    btn.onclick=()=>playEpisode(ep);
+    grid.appendChild(btn);
+  });
+
+  stopPlayer();
+}
+
+function stopPlayer(){
+  const player=document.getElementById("player");
+  player.pause();
+  player.removeAttribute("src");
+  player.load();
+
+  document.getElementById("download").classList.add("hidden");
+  document.getElementById("videoMessage").textContent="";
 }
 
 function playEpisode(ep){
- const url=String(ep.url||ep.vf||ep.vostfr||"").trim();
- const player=$("player");
+  stopPlayer();
 
- if(!url){
-  $("episodeInfo").textContent="Épisode "+ep.number+" : lien vidéo manquant dans episodes.json.";
-  return;
- }
- try{
-  const parsed=new URL(url);
-  if(!["https:","http:"].includes(parsed.protocol))throw Error();
- }catch(e){
-  $("episodeInfo").textContent="Adresse vidéo invalide.";
-  return;
- }
+  if(!ep.url){
+    document.getElementById("videoMessage").textContent=
+      "Lien vidéo manquant pour cet épisode.";
+    return;
+  }
 
- player.pause();
- player.src=url;
- player.load();
- $("episodeInfo").textContent="Chargement de l'épisode "+ep.number+"...";
- player.onerror=()=>{
-  $("episodeInfo").textContent="Lecture impossible. Le lien a peut-être expiré ou son format n'est pas pris en charge.";
- };
- player.onloadedmetadata=()=>{
-  $("episodeInfo").textContent="Épisode "+ep.number;
- };
- player.play().catch(()=>{
-  $("episodeInfo").textContent="Appuie sur Lecture. Si cela échoue, le format peut ne pas être pris en charge.";
- });
- player.scrollIntoView({behavior:"smooth",block:"center"});
+  const player=document.getElementById("player");
+  player.src=ep.url;
+  player.load();
+  player.play().catch(()=>{
+    document.getElementById("videoMessage").textContent=
+      "Lecture impossible. La source peut être incompatible ou le lien expiré.";
+  });
+
+  const download=document.getElementById("download");
+
+  // Le téléchargement dépend des autorisations du serveur vidéo.
+  // Ce bouton ne contourne pas les restrictions de la source.
+  if(ep.downloadUrl){
+    download.href=ep.downloadUrl;
+    download.classList.remove("hidden");
+  }else{
+    document.getElementById("videoMessage").textContent=
+      "La lecture est tentée. Aucun lien de téléchargement autorisé n'est configuré.";
+  }
 }
 
-let timer;
-$("search").addEventListener("input",()=>{
- clearTimeout(timer);
- timer=setTimeout(()=>loadCatalog($("search").value.trim()),500);
+document.getElementById("search").addEventListener("keydown",e=>{
+  if(e.key==="Enter")searchAnime();
 });
-$("searchBtn").onclick=()=>loadCatalog($("search").value.trim());
 
-(async()=>{
- await loadDatabase();
- await loadCatalog();
-})();
+loadDatabase();
 </script>
 </body>
- </html>
+</html>
