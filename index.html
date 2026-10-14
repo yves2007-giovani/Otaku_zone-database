@@ -16,9 +16,7 @@
   --muted: #BBBBBB;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -29,7 +27,7 @@ body {
 
 header {
   padding: 22px 16px;
-  background: #111111;
+  background: #111;
   border-bottom: 2px solid var(--gold);
 }
 
@@ -39,13 +37,9 @@ header h1 {
   font-size: 28px;
 }
 
-header p {
-  color: var(--muted);
-}
+header p { color: var(--muted); }
 
-main {
-  padding: 16px;
-}
+main { padding: 16px; }
 
 input {
   width: 100%;
@@ -57,9 +51,7 @@ input {
   font-size: 16px;
 }
 
-h2 {
-  color: var(--lightgold);
-}
+h2 { color: var(--lightgold); }
 
 .catalogue {
   display: grid;
@@ -76,13 +68,12 @@ h2 {
 
 .poster {
   width: 100%;
-  height: 160px;
+  height: 190px;
+  background: #222;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #3A2B08, #111111);
   color: var(--gold);
-  font-size: 45px;
   overflow: hidden;
 }
 
@@ -92,13 +83,9 @@ h2 {
   object-fit: cover;
 }
 
-.info {
-  padding: 12px;
-}
+.info { padding: 12px; }
 
-.info h3 {
-  font-size: 16px;
-}
+.info h3 { font-size: 15px; }
 
 .info p {
   color: var(--muted);
@@ -106,48 +93,37 @@ h2 {
   line-height: 1.5;
 }
 
-button, .watch {
-  display: block;
+button {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
   border: 0;
   border-radius: 8px;
   background: var(--gold);
-  color: #111111;
-  text-align: center;
-  text-decoration: none;
+  color: #111;
   font-weight: bold;
-  font-size: 14px;
   cursor: pointer;
 }
 
-button:active {
-  background: var(--lightgold);
+button:disabled {
+  opacity: .45;
+  cursor: default;
 }
 
-#animePage {
-  display: none;
-  margin-top: 22px;
-}
+#animePage { display: none; }
 
 .hero {
   width: 100%;
-  min-height: 190px;
-  border-radius: 12px;
+  max-height: 360px;
   overflow: hidden;
-  background: linear-gradient(145deg, #4A370A, #171717);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--gold);
-  font-size: 55px;
+  background: #222;
+  text-align: center;
 }
 
 .hero img {
   width: 100%;
-  max-height: 300px;
-  object-fit: cover;
+  max-height: 360px;
+  object-fit: contain;
 }
 
 .season {
@@ -158,27 +134,24 @@ button:active {
   border-radius: 10px;
 }
 
-.season h3 {
-  color: var(--gold);
-}
-
-.episode {
-  padding: 10px 0;
-  border-top: 1px solid #383020;
-}
-
-.episode p {
-  margin-bottom: 8px;
-}
+.season h3 { color: var(--gold); }
 
 .back {
   background: #292929;
   color: var(--gold);
+  margin-bottom: 16px;
 }
 
 #status {
   color: var(--muted);
   line-height: 1.6;
+}
+
+.pagination {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 footer {
@@ -188,11 +161,14 @@ footer {
   border-top: 1px solid #383020;
   margin-top: 30px;
 }
+
+@media (max-width: 350px) {
+  .catalogue { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 
 <body>
-
 <header>
   <h1>Otaku_zone</h1>
   <p>Ton univers anime</p>
@@ -200,201 +176,216 @@ footer {
 
 <main>
   <section id="home">
-    <input
-      id="search"
-      type="search"
+    <input id="search" type="search"
       placeholder="Rechercher un animé..."
-      oninput="renderCatalogue()"
-    >
-
+      autocomplete="off">
     <h2>Catalogue anime</h2>
     <p id="status">Chargement du catalogue...</p>
     <div id="catalogue" class="catalogue"></div>
+
+    <div class="pagination">
+      <button id="previous" disabled>← Précédent</button>
+      <button id="next" disabled>Suivant →</button>
+    </div>
   </section>
 
   <section id="animePage">
-    <button class="back" onclick="goHome()">
-      ← Retour au catalogue
-    </button>
-
-    <div id="hero" class="hero">🎬</div>
+    <button class="back" onclick="goHome()">← Retour au catalogue</button>
+    <div id="hero" class="hero"></div>
     <h2 id="animeTitle"></h2>
     <p id="animeDescription"></p>
-
+    <p id="animeDetails"></p>
     <h2>Saisons et épisodes</h2>
     <div id="seasonList"></div>
   </section>
 </main>
 
-<footer>
-  Otaku_zone · Noir & doré
-</footer>
+<footer>Otaku_zone · Noir & doré</footer>
 
 <script>
-let animes = [];
+const API = "https://graphql.anilist.co";
+const PAGE_SIZE = 20;
 
-const demos = [
-  {
-    id: 1,
-    title: "One Piece",
-    description: "L'aventure de Luffy et de son équipage.",
-    image: "",
-    seasons: [
-      {
-        name: "Saison 1",
-        episodes: [
-          { number: 1, title: "Je suis Luffy !", url: "" },
-          { number: 2, title: "Le grand épéiste", url: "" },
-          { number: 3, title: "Morgan contre Luffy", url: "" }
-        ]
+let page = 1;
+let query = "";
+let animes = [];
+let searchTimer = null;
+let requestNumber = 0;
+
+const $ = id => document.getElementById(id);
+
+async function fetchAniList() {
+  const currentRequest = ++requestNumber;
+  $("status").textContent = "Chargement des animés...";
+  $("catalogue").innerHTML = "";
+  $("previous").disabled = true;
+  $("next").disabled = true;
+
+  const gql = `
+    query ($page: Int, $perPage: Int, $search: String) {
+      Page(page: $page, perPage: $perPage) {
+        pageInfo {
+          currentPage
+          hasNextPage
+        }
+        media(
+          type: ANIME,
+          sort: POPULARITY_DESC,
+          search: $search
+        ) {
+          id
+          title {
+            romaji
+            english
+            native
+          }
+          coverImage {
+            large
+          }
+          description(asHtml: false)
+          episodes
+          seasonYear
+          format
+          status
+          genres
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    page,
+    perPage: PAGE_SIZE
+  };
+
+  if (query) variables.search = query;
+
+  try {
+    const response = await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
       },
-      {
-        name: "Saison 2",
-        episodes: [
-          { number: 1, title: "Épisode 1", url: "" },
-          { number: 2, title: "Épisode 2", url: "" }
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    title: "Demon Slayer",
-    description: "Un jeune garçon devient chasseur de démons.",
-    image: "",
-    seasons: [
-      {
-        name: "Saison 1",
-        episodes: [
-          { number: 1, title: "Cruauté", url: "" },
-          { number: 2, title: "Urokodaki Sakonji", url: "" },
-          { number: 3, title: "Sabito et Makomo", url: "" }
-        ]
-      }
-    ]
-  },
-  {
-    id: 3,
-    title: "Attack on Titan",
-    description: "L'humanité lutte pour sa survie.",
-    image: "",
-    seasons: [
-      {
-        name: "Saison 1",
-        episodes: [
-          { number: 1, title: "À toi, dans 2000 ans", url: "" },
-          { number: 2, title: "Ce jour-là", url: "" }
-        ]
-      }
-    ]
+      body: JSON.stringify({
+        query: gql,
+        variables
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error("Réponse HTTP " + response.status);
+    }
+
+    const result = await response.json();
+
+    if (currentRequest !== requestNumber) return;
+
+    if (result.errors) {
+      throw new Error("L'API a refusé la requête.");
+    }
+
+    animes = result.data.Page.media || [];
+    renderCatalogue();
+
+    $("status").textContent = animes.length
+      ? `${animes.length} animés affichés · Page ${page}`
+      : "Aucun animé trouvé. Essaie un autre titre.";
+
+    $("previous").disabled = page <= 1;
+    $("next").disabled = !result.data.Page.pageInfo.hasNextPage;
+
+  } catch (error) {
+    if (currentRequest !== requestNumber) return;
+
+    $("status").textContent =
+      "Impossible de charger le catalogue. Vérifie ta connexion Internet et réessaie.";
+
+    $("catalogue").innerHTML = `
+      <div>
+        <p>Le service AniList ne répond pas actuellement ou la connexion est bloquée.</p>
+        <button onclick="fetchAniList()">Réessayer</button>
+      </div>
+    `;
   }
-];
+}
 
 function renderCatalogue() {
-  const query = document.getElementById("search")
-    .value.toLowerCase();
+  $("catalogue").innerHTML = animes.map(anime => {
+    const title = getTitle(anime);
+    const image = anime.coverImage?.large || "";
 
-  const filtered = animes.filter(anime =>
-    (anime.title || "").toLowerCase().includes(query)
-  );
-
-  document.getElementById("catalogue").innerHTML =
-    filtered.map(anime => `
+    return `
       <article class="card">
         <div class="poster">
-          ${anime.image
-            ? `<img src="${safeImage(anime.image)}"
-                    alt="${escapeHTML(anime.title)}">`
+          ${image
+            ? `<img src="${escapeHTML(image)}"
+                alt="${escapeHTML(title)}" loading="lazy">`
             : "🎬"}
         </div>
         <div class="info">
-          <h3>${escapeHTML(anime.title)}</h3>
-          <p>${escapeHTML(anime.description || "")}</p>
+          <h3>${escapeHTML(title)}</h3>
+          <p>${escapeHTML(anime.seasonYear || "Année inconnue")}</p>
           <button onclick="openAnime(${Number(anime.id)})">
             Découvrir
           </button>
         </div>
       </article>
-    `).join("");
+    `;
+  }).join("");
+}
 
-  document.getElementById("status").textContent =
-    filtered.length ? "" : "Aucun animé trouvé.";
+function getTitle(anime) {
+  return anime.title?.english ||
+         anime.title?.romaji ||
+         anime.title?.native ||
+         "Anime sans titre";
 }
 
 function openAnime(id) {
-  const anime = animes.find(item => Number(item.id) === id);
+  const anime = animes.find(item => Number(item.id) === Number(id));
   if (!anime) return;
 
-  document.getElementById("home").style.display = "none";
-  document.getElementById("animePage").style.display = "block";
+  $("home").style.display = "none";
+  $("animePage").style.display = "block";
 
-  document.getElementById("animeTitle").textContent = anime.title;
-  document.getElementById("animeDescription").textContent =
-    anime.description || "";
+  $("animeTitle").textContent = getTitle(anime);
+  $("animeDescription").textContent =
+    stripHTML(anime.description || "Aucune description disponible.");
 
-  const hero = document.getElementById("hero");
+  $("animeDetails").textContent = [
+    anime.format ? "Format : " + anime.format : "",
+    anime.episodes ? "Épisodes annoncés : " + anime.episodes : "",
+    anime.seasonYear ? "Année : " + anime.seasonYear : "",
+    anime.status ? "Statut : " + anime.status : "",
+    anime.genres?.length ? "Genres : " + anime.genres.join(", ") : ""
+  ].filter(Boolean).join(" · ");
 
-  if (anime.image) {
-    hero.innerHTML = `<img src="${safeImage(anime.image)}"
-                            alt="${escapeHTML(anime.title)}">`;
-  } else {
-    hero.textContent = "🎬";
-  }
+  const image = anime.coverImage?.large || "";
+  $("hero").innerHTML = image
+    ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(getTitle(anime))}">`
+    : "🎬";
 
-  const seasons = anime.seasons || [];
-  const list = document.getElementById("seasonList");
-
-  if (!seasons.length) {
-    list.innerHTML = "<p>Aucune saison ajoutée pour le moment.</p>";
-  } else {
-    list.innerHTML = seasons.map((season, i) => `
-      <div class="season">
-        <h3>${escapeHTML(
-          season.name || season.title || "Saison " + (i + 1)
-        )}</h3>
-
-        ${(season.episodes || []).map((episode, j) => `
-          <div class="episode">
-            <p>
-              Épisode ${Number(episode.number || j + 1)}
-              : ${escapeHTML(episode.title || "Sans titre")}
-            </p>
-
-            ${validURL(episode.url)
-              ? `<a class="watch"
-                  href="${escapeHTML(episode.url)}"
-                  target="_blank"
-                  rel="noopener noreferrer">▶ Regarder</a>`
-              : `<p style="color:#BBBBBB">
-                   Épisode de démonstration, sans vidéo.
-                 </p>`
-            }
-          </div>
-        `).join("")}
-      </div>
-    `).join("");
-  }
+  $("seasonList").innerHTML = `
+    <div class="season">
+      <p>Les informations sur les saisons et les vidéos doivent être ajoutées séparément.</p>
+      <p>Aucun lecteur vidéo n'est configuré pour cet anime.</p>
+    </div>
+  `;
 
   window.scrollTo(0, 0);
 }
 
 function goHome() {
-  document.getElementById("animePage").style.display = "none";
-  document.getElementById("home").style.display = "block";
+  $("animePage").style.display = "none";
+  $("home").style.display = "block";
   window.scrollTo(0, 0);
 }
 
-function validURL(value) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:";
-  } catch {
-    return false;
-  }
-}
-
-function safeImage(value) {
-  return validURL(value) ? escapeHTML(value) : "";
+function stripHTML(value) {
+  const element = document.createElement("div");
+  element.innerHTML = value;
+  return element.textContent || element.innerText || "";
 }
 
 function escapeHTML(value) {
@@ -407,34 +398,29 @@ function escapeHTML(value) {
   })[char]);
 }
 
-async function loadCatalogue() {
-  try {
-    const response = await fetch("./episodes.json");
+$("search").addEventListener("input", event => {
+  clearTimeout(searchTimer);
+  query = event.target.value.trim();
+  page = 1;
 
-    if (!response.ok) {
-      throw new Error("JSON introuvable");
-    }
+  searchTimer = setTimeout(fetchAniList, 500);
+});
 
-    const data = await response.json();
-
-    if (Array.isArray(data.animes) && data.animes.length) {
-      animes = data.animes;
-    } else {
-      animes = demos;
-    }
-
-    document.getElementById("status").textContent = "";
-  } catch (error) {
-    animes = demos;
-    document.getElementById("status").textContent =
-      "Catalogue de démonstration.";
+$("previous").addEventListener("click", () => {
+  if (page > 1) {
+    page--;
+    fetchAniList();
+    window.scrollTo(0, 0);
   }
+});
 
-  renderCatalogue();
-}
+$("next").addEventListener("click", () => {
+  page++;
+  fetchAniList();
+  window.scrollTo(0, 0);
+});
 
-loadCatalogue();
+fetchAniList();
 </script>
-
 </body>
-</html>
+  </html>
