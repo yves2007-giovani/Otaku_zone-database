@@ -1,91 +1,122 @@
 {
-"app": "Otaku_zone",
-"theme": {
-"background": "#000000",
-"primary": "#D4AF37",
-"text": "#FFFFFF"
-},
-"animes": [
-{
-"id": 1,
-"title": "Demon Slayer",
-"image": "",
-"description": "Un jeune chasseur de démons part à la recherche d'un remède pour sauver sa sœur.",
-"description_fr": "Un jeune chasseur de démons part à la recherche d'un remède pour sauver sa sœur.",
-"vf": null,
-"vostfr": null,
-"seasons": [
-{
-"number": 1,
-"title": "Saison 1",
-"episodes": [
-{
-"number": 1,
-"title": "Cruauté",
-"url": ""
-},
-{
-"number": 2,
-"title": "Le formateur Sakonji Urokodaki",
-"url": ""
-}
-]
-}
-]
-},
-{
-"id": 2,
-"title": "Attack on Titan",
-"image": "",
-"description": "L'humanité lutte pour survivre face à des créatures géantes.",
-"description_fr": "L'humanité lutte pour survivre face à des créatures géantes.",
-"vf": null,
-"vostfr": null,
-"seasons": [
-{
-"number": 1,
-"title": "Saison 1",
-"episodes": [
-{
-"number": 1,
-"title": "À toi, dans 2000 ans",
-"url": ""
-},
-{
-"number": 2,
-"title": "Ce jour-là",
-"url": ""
-}
-]
-}
-]
-},
-{
-"id": 3,
-"title": "One Piece",
-"image": "",
-"description": "Luffy prend la mer pour trouver le légendaire trésor One Piece et devenir le roi des pirates.",
-"description_fr": "Luffy prend la mer pour trouver le légendaire trésor One Piece et devenir le roi des pirates.",
-"vf": null,
-"vostfr": null,
-"seasons": [
-{
-"number": 1,
-"title": "Saison 1",
-"episodes": [
-{
-"number": 1,
-"title": "Je suis Luffy !",
-"url": ""
-},
-{
-"number": 2,
-"title": "Le grand épéiste !",
-"url": ""
-}
-]
-}
-]
-}
-]
-}
+  "app": "Otaku_zone",
+  "theme": {
+    "background": "#000000",
+    "primary": "#D4AF37",
+    "text": "#FFFFFF"
+  },
+  "animes": [
+    {
+      "id": 1,
+      "title": "Demon Slayer",
+      "image": "",
+      "description_fr": "Un jeune chasseur de démons cherche un remède pour sauver sa sœur.",
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Saison 1",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Cruauté",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            },
+            {
+              "number": 2,
+              "title": "Le formateur Sakonji Urokodaki",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Attack on Titan",
+      "image": "",
+      "description_fr": "L'humanité lutte pour survivre face aux Titans.",
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Saison 1",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "À toi, dans 2000 ans",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            },
+            {
+              "number": 2,
+              "title": "Ce jour-là",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "One Piece",
+      "image": "",
+      "description_fr": "Luffy part à la recherche du trésor légendaire One Piece.",
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Épisodes",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Je suis Luffy !",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            },
+            {
+              "number": 2,
+              "title": "Le grand épéiste !",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Black Clover",
+      "image": "",
+      "description_fr": "Asta rêve de devenir Empereur-Mage dans un monde où la magie règne.",
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Épisodes",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Asta et Yuno",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            },
+            {
+              "number": 2,
+              "title": "Le serment des garçons",
+              "url": "",
+              "vf": "",
+              "vostfr": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+            }
