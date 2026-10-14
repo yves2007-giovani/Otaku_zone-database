@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0B0614">
 <title>Otaku_zone</title>
 
 <style>
@@ -19,95 +18,123 @@ body {
 }
 
 header {
-  padding: 22px 16px;
-  background: #160D26;
-  border-bottom: 2px solid #8B5CF6;
+  background: #160D25;
+  padding: 25px 18px;
+  border-bottom: 3px solid #8B5CF6;
 }
 
 header h1 {
-  margin: 0;
   color: #A78BFA;
-  font-size: 27px;
+  margin: 0 0 12px;
+  font-size: 30px;
 }
 
 header p {
-  color: #C4B5FD;
+  color: #D8B4FE;
+  font-size: 18px;
   margin-bottom: 0;
 }
 
-.search {
-  padding: 16px;
+main {
+  padding: 20px;
 }
 
 input {
   width: 100%;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 16px;
   border: 1px solid #8B5CF6;
-  background: #1A1029;
+  border-radius: 15px;
+  background: #190F28;
   color: white;
   font-size: 16px;
+  margin-bottom: 25px;
 }
 
 h2 {
-  padding: 0 16px;
-  color: #C4B5FD;
+  color: #D8B4FE;
 }
 
 .catalogue {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
-  padding: 16px;
 }
 
 .card {
-  background: #1A1029;
-  border: 1px solid #382454;
-  border-radius: 12px;
+  background: #1B1028;
+  border: 1px solid #39214F;
+  border-radius: 17px;
   overflow: hidden;
 }
 
 .poster {
-  height: 150px;
+  height: 145px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #32145D, #10091C);
-  color: #C4B5FD;
-  font-size: 35px;
+  align-items: center;
+  background: linear-gradient(135deg, #35145B, #140A20);
+  font-size: 55px;
 }
 
-.info {
+.details {
   padding: 12px;
 }
 
-.info h3 {
-  font-size: 16px;
-  margin: 0 0 8px;
+.details h3 {
+  font-size: 17px;
 }
 
-.info p {
-  color: #C4B5FD;
-  font-size: 12px;
+.details p {
+  color: #D1C1E8;
+  font-size: 13px;
   line-height: 1.5;
 }
 
-button {
+button, .watch {
+  display: block;
   width: 100%;
-  padding: 10px;
   border: 0;
-  border-radius: 7px;
+  border-radius: 9px;
+  padding: 12px 5px;
   background: #8B5CF6;
   color: white;
   font-weight: bold;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+#detailsAnime {
+  margin-top: 25px;
+  padding: 16px;
+  background: #190F28;
+  border: 1px solid #8B5CF6;
+  border-radius: 15px;
+  display: none;
+}
+
+.season {
+  background: #28163C;
+  padding: 12px;
+  border-radius: 10px;
+  margin: 12px 0;
+}
+
+.episode {
+  border-top: 1px solid #49305F;
+  padding: 10px 0;
+}
+
+.back {
+  background: #49305F;
 }
 
 footer {
-  text-align: center;
   padding: 25px;
-  color: #9CA3AF;
-  font-size: 12px;
+  text-align: center;
+  color: #A78BFA;
 }
 </style>
 </head>
@@ -115,79 +142,133 @@ footer {
 <body>
 
 <header>
-  <h1>Otaku_zone</h1>
-  <p>Ton univers anime 💜</p>
+  <h1>Otaku_zone 💜</h1>
+  <p>Ton univers anime</p>
 </header>
 
-<div class="search">
+<main>
   <input
-    id="search"
     type="search"
+    id="search"
     placeholder="Rechercher un animé..."
-    oninput="afficherAnimes()">
-</div>
+    oninput="searchAnime()"
+  >
 
-<h2>🔥 Catalogue anime</h2>
+  <h2>🔥 Catalogue anime</h2>
 
-<div id="catalogue" class="catalogue">
-  Chargement du catalogue...
-</div>
+  <div class="catalogue" id="catalogue"></div>
+
+  <section id="detailsAnime">
+    <button class="back" onclick="closeAnime()">← Retour au catalogue</button>
+    <h2 id="animeTitle"></h2>
+    <p id="animeDescription"></p>
+    <div id="seasons"></div>
+  </section>
+</main>
 
 <footer>
-  Otaku_zone · Ton univers anime
+  Otaku_zone 💜<br>
+  Ton univers anime
 </footer>
 
 <script>
-let animes = [];
-
-function afficherAnimes() {
-  const recherche = document
-    .getElementById("search")
-    .value.toLowerCase();
-
-  const catalogue = document.getElementById("catalogue");
-
-  const filtres = animes.filter(anime =>
-    anime.title.toLowerCase().includes(recherche)
-  );
-
-  if (filtres.length === 0) {
-    catalogue.innerHTML = "<p>Aucun animé trouvé.</p>";
-    return;
+const animes = [
+  {
+    id: 1,
+    title: "Demon Slayer",
+    emoji: "⚔️",
+    description: "Un jeune chasseur de démons.",
+    seasons: []
+  },
+  {
+    id: 2,
+    title: "Attack on Titan",
+    emoji: "🛡️",
+    description: "L'humanité lutte pour survivre.",
+    seasons: []
+  },
+  {
+    id: 3,
+    title: "One Piece",
+    emoji: "🏴‍☠️",
+    description: "L'aventure de Luffy et son équipage.",
+    seasons: []
   }
+];
 
-  catalogue.innerHTML = filtres.map(anime => `
-    <article class="card">
-      <div class="poster">
-        ${anime.image
-          ? `<img src="${anime.image}" alt=""
-             style="width:100%;height:100%;object-fit:cover">`
-          : "🎬"}
-      </div>
-      <div class="info">
-        <h3>${anime.title}</h3>
-        <p>${anime.description || ""}</p>
-        <button onclick="alert('Les saisons et épisodes seront ajoutés prochainement !')">
-          Découvrir
-        </button>
-      </div>
-    </article>
-  `).join("");
+function displayAnimes(list) {
+  const catalogue = document.getElementById("catalogue");
+  catalogue.innerHTML = "";
+
+  list.forEach(anime => {
+    catalogue.innerHTML += `
+      <article class="card">
+        <div class="poster">${anime.emoji}</div>
+        <div class="details">
+          <h3>${anime.title}</h3>
+          <p>${anime.description}</p>
+          <button onclick="openAnime(${anime.id})">
+            Découvrir
+          </button>
+        </div>
+      </article>
+    `;
+  });
 }
 
-fetch("./episodes.json")
-  .then(response => {
-    if (!response.ok) throw new Error("Fichier introuvable");
-    return response.json();
-  })
-  .then(data => {
-    animes = data.animes || [];
-    afficherAnimes();
-  })
-  .catch(() => {
-    document.getElementById("catalogue").innerHTML =
-      "<p>Impossible de charger le catalogue. Vérifie episodes.json.</p>";
+function searchAnime() {
+  const query = document.getElementById("search").value.toLowerCase();
+
+  displayAnimes(
+    animes.filter(anime =>
+      anime.title.toLowerCase().includes(query)
+    )
+  );
+}
+
+function openAnime(id) {
+  const anime = animes.find(item => item.id === id);
+
+  document.getElementById("detailsAnime").style.display = "block";
+  document.getElementById("animeTitle").textContent = anime.title;
+  document.getElementById("animeDescription").textContent =
+    anime.description;
+
+  const seasons = document.getElementById("seasons");
+
+  if (anime.seasons.length === 0) {
+    seasons.innerHTML = `
+      <p>Aucune saison ajoutée pour le moment.</p>
+      <p>Les saisons et les épisodes seront ajoutés ici.</p>
+    `;
+  } else {
+    seasons.innerHTML = anime.seasons.map(season => `
+      <div class="season">
+        <h3>${season.name}</h3>
+        ${season.episodes.map(episode => `
+          <div class="episode">
+            <p>${episode.title}</p>
+            ${
+              episode.url
+                ? `<a class="watch" href="${episode.url}" target="_blank" rel="noopener">▶ Regarder</a>`
+                : "<p>Lien vidéo à ajouter.</p>"
+            }
+          </div>
+        `).join("")}
+      </div>
+    `).join("");
+  }
+
+  document.getElementById("detailsAnime").scrollIntoView({
+    behavior: "smooth"
   });
+}
+
+function closeAnime() {
+  document.getElementById("detailsAnime").style.display = "none";
+}
+
+displayAnimes(animes);
 </script>
 
 </body>
