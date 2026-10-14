@@ -2,441 +2,229 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#000000">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000">
 <title>OTAKU_ZONE</title>
-
 <style>
-:root {
-  --bg: #000;
-  --gold: #D4AF37;
-  --white: #fff;
-  --panel: #101010;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--white);
-  font-family: Arial, sans-serif;
-}
-header {
-  background: #080808;
-  border-bottom: 2px solid var(--gold);
-  padding: 18px 12px;
-  text-align: center;
-}
-.logo {
-  color: var(--gold);
-  font-size: 27px;
-  font-weight: bold;
-}
-nav {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px;
-}
-button, input, select { font-size: 15px; }
-button { cursor: pointer; }
-.nav-btn, .gold-btn {
-  color: var(--gold);
-  background: #080808;
-  border: 1px solid var(--gold);
-  border-radius: 7px;
-  padding: 10px 14px;
-}
-.nav-btn:hover, .gold-btn:hover {
-  background: var(--gold);
-  color: #000;
-}
-main {
-  max-width: 1100px;
-  margin: auto;
-  padding: 14px;
-}
-input, select {
-  width: 100%;
-  padding: 12px;
-  background: #111;
-  color: white;
-  border: 1px solid #444;
-  border-radius: 7px;
-}
-h2 { color: var(--gold); }
-#search { margin-bottom: 16px; }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-}
-.card {
-  background: var(--panel);
-  border: 1px solid #292929;
-  border-radius: 9px;
-  overflow: hidden;
-  cursor: pointer;
-}
-.card img {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  background: #171717;
-}
-.card h3 {
-  font-size: 15px;
-  padding: 0 10px;
-}
-.card p {
-  font-size: 12px;
-  color: #bbb;
-  padding: 0 10px;
-}
-.hidden { display: none !important; }
-.player {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background: #111;
-}
-.player iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-.controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin: 14px 0;
-}
-.episodes {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 8px;
-}
-.ep {
-  padding: 12px 5px;
-  background: #101010;
-  color: white;
-  border: 1px solid #444;
-  border-radius: 6px;
-}
-.ep.active, .ep:hover {
-  background: var(--gold);
-  color: #000;
-}
-.notice {
-  color: #aaa;
-  font-size: 13px;
-  line-height: 1.5;
-}
-footer {
-  text-align: center;
-  color: #888;
-  padding: 25px;
-}
+*{box-sizing:border-box}
+body{margin:0;background:#080808;color:#fff;font-family:Arial,sans-serif}
+header{background:#111;padding:15px;border-bottom:1px solid #d4af37;position:sticky;top:0;z-index:2}
+h1,.gold{color:#d4af37}
+input{width:100%;padding:12px;background:#222;color:white;border:1px solid #555;border-radius:8px;margin-top:10px}
+nav{display:flex;gap:8px;overflow:auto;margin-top:12px}
+button{padding:10px;border:1px solid #d4af37;border-radius:7px;background:#191919;color:#d4af37}
+main{padding:15px;max-width:1100px;margin:auto}
+.page{display:none}.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:12px}
+.card{background:#171717;border:1px solid #333;border-radius:8px;overflow:hidden;cursor:pointer}
+.card img{width:100%;height:190px;object-fit:cover}
+.card h3{font-size:14px;padding:0 8px}
+.small{font-size:12px;color:#aaa;padding:0 8px}
+.box{background:#151515;padding:12px;margin:12px 0;border-radius:8px}
+.episodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.ep{color:white;border-color:#444}
+.ep.active{background:#d4af37;color:#000}
+iframe{width:100%;aspect-ratio:16/9;border:1px solid #d4af37;background:#000}
+.msg{padding:15px;color:#aaa}
 </style>
 </head>
-
 <body>
 <header>
-  <div class="logo">⚡ OTAKU_ZONE</div>
-  <p>Ton univers anime</p>
-</header>
-
+<h1>OTAKU_ZONE</h1>
+<input id="search" placeholder="Rechercher un anime...">
 <nav>
-  <button class="nav-btn" onclick="showHome()">Accueil</button>
-  <button class="nav-btn" onclick="loadCatalogue()">Actualiser</button>
+<button onclick="show('home')">Accueil</button>
+<button onclick="show('catalog')">Catalogue</button>
+<button onclick="show('favorites')">Favoris</button>
 </nav>
-
+</header>
 <main>
-<section id="home">
-  <input id="search" placeholder="🔎 Rechercher un anime..."
-         oninput="filterAnime()">
-
-  <h2>Catalogue anime</h2>
-  <p id="status" class="notice">Chargement du catalogue...</p>
-  <div id="catalogue" class="grid"></div>
-
-  <div class="controls">
-    <button class="gold-btn" onclick="previousPage()">Précédent</button>
-    <button class="gold-btn" onclick="nextPage()">Suivant</button>
-  </div>
+<section id="home" class="page active">
+<h2 class="gold">Animes populaires</h2>
+<div id="popular" class="grid"><p class="msg">Chargement...</p></div>
 </section>
-
-<section id="details" class="hidden">
-  <button class="nav-btn" onclick="showHome()">← Retour</button>
-  <h2 id="animeTitle">Anime</h2>
-  <p id="animeInfo" class="notice"></p>
-
-  <div class="player">
-    <iframe id="video"
-      src="about:blank"
-      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-      allowfullscreen
-      loading="lazy"></iframe>
-  </div>
-
-  <div class="controls">
-    <label>Saison
-      <select id="season" onchange="changeSeason()"></select>
-    </label>
-    <label>Épisode
-      <select id="episode" onchange="playSelectedEpisode()"></select>
-    </label>
-  </div>
-
-  <h2>Épisodes</h2>
-  <div id="episodes" class="episodes"></div>
-  <p id="episodeStatus" class="notice"></p>
+<section id="catalog" class="page">
+<h2 class="gold">Catalogue</h2>
+<div id="results" class="grid"></div>
+</section>
+<section id="detail" class="page">
+<button onclick="show('catalog')">← Retour</button>
+<div id="details"></div>
+</section>
+<section id="favorites" class="page">
+<h2 class="gold">Mes favoris</h2>
+<div id="fav" class="grid"></div>
 </section>
 </main>
 
-<footer>OTAKU_ZONE ©</footer>
-
 <script>
-const API = "https://frembed.bar/api/public/v1";
-const BASE = "https://frembed.bar";
+const API="https://graphql.anilist.co";
+const DB="https://raw.githubusercontent.com/yves2007-giovani/Otaku_zone-database/main/episodes.json";
+const $=id=>document.getElementById(id);
+let animeList=[],database=[],current=null,back="home";
 
-let animeList = [];
-let filteredAnime = [];
-let page = 1;
-let totalPages = 1;
-let currentAnime = null;
-let currentSeason = 1;
-let currentEpisode = 1;
-let episodeData = [];
+function show(id){
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));
+$(id).classList.add("active");
+if(id==="favorites")renderFavorites();
+window.scrollTo(0,0);
+}
+function title(a){return a.title?.userPreferred||a.title?.english||a.title?.romaji||a.title||"Anime"}
+function cover(a){return a.coverImage?.large||a.image||"https://placehold.co/300x400/111/D4AF37?text=Anime"}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 
-async function api(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error("Erreur API : " + response.status);
-  return response.json();
+async function gql(query,variables={}){
+const r=await fetch(API,{
+method:"POST",
+headers:{"Content-Type":"application/json","Accept":"application/json"},
+body:JSON.stringify({query,variables})
+});
+if(!r.ok)throw Error("API indisponible");
+const j=await r.json();
+if(j.errors)throw Error("Erreur API");
+return j.data;
 }
 
-async function loadCatalogue() {
-  const status = document.getElementById("status");
-  status.textContent = "Chargement du catalogue...";
-  document.getElementById("catalogue").innerHTML = "";
-
-  try {
-    const data = await api(
-      `${API}/anime?type=all&order=popular&limit=40&page=${page}`
-    );
-
-    animeList = data.result?.items || [];
-    totalPages = data.result?.totalPages || 1;
-
-    filteredAnime = animeList;
-    renderCatalogue(filteredAnime);
-
-    status.textContent = animeList.length
-      ? `Page ${page} sur ${totalPages}`
-      : "Aucun anime disponible.";
-  } catch (error) {
-    status.textContent =
-      "Impossible de charger le catalogue. Vérifie ta connexion et réessaie.";
-  }
+function card(a){
+return `<article class="card" onclick="openAnime(${Number(a.id)})">
+<img loading="lazy" src="${esc(cover(a))}">
+<h3>${esc(title(a))}</h3>
+<p class="small">${esc(a.format||"ANIME")} ${a.episodes?"· "+a.episodes+" épisodes":""}</p>
+</article>`;
 }
 
-function renderCatalogue(list) {
-  const box = document.getElementById("catalogue");
-  box.innerHTML = "";
-
-  list.forEach(anime => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    const img = document.createElement("img");
-    img.alt = anime.title || "Anime";
-    img.src = anime.poster || 
-      "https://placehold.co/300x400/111/D4AF37?text=OTAKU_ZONE";
-
-    const title = document.createElement("h3");
-    title.textContent = anime.title || "Anime sans titre";
-
-    const version = document.createElement("p");
-    version.textContent = anime.version || "Version non précisée";
-
-    card.append(img, title, version);
-    card.onclick = () => openAnime(anime);
-    box.appendChild(card);
-  });
+async function loadPopular(){
+try{
+const d=await gql(`query{
+Page(page:1,perPage:24){
+media(type:ANIME,sort:TRENDING_DESC){
+id title{romaji english userPreferred}
+coverImage{large} format episodes description(asHtml:false)
+}
+}
+}`);
+animeList=d.Page.media;
+$("popular").innerHTML=animeList.map(card).join("");
+}catch(e){
+$("popular").innerHTML='<p class="msg">Impossible de charger le catalogue. Vérifie la connexion.</p>';
+}
 }
 
-function filterAnime() {
-  const query = document.getElementById("search").value.toLowerCase();
-
-  filteredAnime = animeList.filter(anime =>
-    (anime.title || "").toLowerCase().includes(query)
-  );
-
-  renderCatalogue(filteredAnime);
+async function loadDatabase(){
+try{
+const r=await fetch(DB+"?t="+Date.now());
+const d=await r.json();
+database=Array.isArray(d)?d:(d.animes||[]);
+}catch(e){database=[]}
 }
 
-function nextPage() {
-  if (page < totalPages) {
-    page++;
-    loadCatalogue();
-    window.scrollTo(0, 0);
-  }
+async function searchAnime(q){
+show("catalog");
+$("results").innerHTML='<p class="msg">Recherche...</p>';
+try{
+const d=await gql(`query($s:String){
+Page(page:1,perPage:30){
+media(search:$s,type:ANIME,sort:SEARCH_MATCH){
+id title{romaji english userPreferred}
+coverImage{large} format episodes description(asHtml:false)
+}
+}
+}`,{s:q});
+animeList.push(...d.Page.media);
+$("results").innerHTML=d.Page.media.length?
+d.Page.media.map(card).join(""):'<p class="msg">Aucun résultat.</p>';
+}catch(e){
+$("results").innerHTML='<p class="msg">Recherche indisponible.</p>';
+}
 }
 
-function previousPage() {
-  if (page > 1) {
-    page--;
-    loadCatalogue();
-    window.scrollTo(0, 0);
-  }
+$("search").addEventListener("keydown",e=>{
+if(e.key==="Enter"&&e.target.value.trim())searchAnime(e.target.value.trim());
+});
+
+function findLocal(a){
+return database.find(x=>
+String(x.anilistId||x.id)===String(a.id)||
+String(x.title||x.name||"").toLowerCase()===title(a).toLowerCase()
+);
 }
 
-async function openAnime(anime) {
-  currentAnime = anime;
-  currentSeason = 1;
-  currentEpisode = 1;
+function openAnime(id){
+const a=animeList.find(x=>Number(x.id)===Number(id));
+if(!a)return;
+back=document.querySelector(".page.active").id;
+current=a;
+const local=findLocal(a);
+const seasons=local?.seasons||[];
+let seasonHTML="";
 
-  document.getElementById("home").classList.add("hidden");
-  document.getElementById("details").classList.remove("hidden");
-  document.getElementById("animeTitle").textContent =
-    anime.title || "Anime";
-
-  document.getElementById("animeInfo").textContent =
-    "Chargement des épisodes...";
-
-  document.getElementById("video").src = "about:blank";
-  document.getElementById("episodes").innerHTML = "";
-
-  try {
-    const id = encodeURIComponent(anime.tmdb || anime.imdb);
-    const data = await api(`${API}/anime/${id}`);
-
-    const result = data.result || {};
-    episodeData = result.items || [];
-
-    if (result.type === "movie") {
-      document.getElementById("animeInfo").textContent =
-        "Film d'animation";
-      document.getElementById("season").innerHTML =
-        '<option value="0">Film</option>';
-      document.getElementById("episode").innerHTML =
-        '<option value="1">Film</option>';
-      document.getElementById("episodes").innerHTML = "";
-      document.getElementById("video").src =
-        `${BASE}/embed/movie/${encodeURIComponent(anime.tmdb || anime.imdb)}`;
-      return;
-    }
-
-    const seasons = [...new Set(
-      episodeData.map(ep => Number(ep.sa)).filter(Number.isFinite)
-    )].sort((a, b) => a - b);
-
-    const seasonSelect = document.getElementById("season");
-    seasonSelect.innerHTML = "";
-
-    seasons.forEach(s => seasonSelect.add(new Option("Saison " + s, s)));
-
-    if (!seasons.length) {
-      document.getElementById("animeInfo").textContent =
-        "Aucun épisode trouvé pour cet anime.";
-      document.getElementById("episode").innerHTML = "";
-      return;
-    }
-
-    currentSeason = seasons[0];
-    seasonSelect.value = String(currentSeason);
-
-    document.getElementById("animeInfo").textContent =
-      `${episodeData.length} épisode(s) disponible(s) dans les données reçues.`;
-
-    renderSeasonEpisodes();
-  } catch (error) {
-    document.getElementById("animeInfo").textContent =
-      "Impossible de récupérer les épisodes de cet anime.";
-  }
+if(seasons.length){
+seasonHTML=seasons.map((s,i)=>`
+<div class="box">
+<h3 class="gold">${esc(s.title||"Saison "+(s.number||i+1))}</h3>
+<div class="episodes">
+${(s.episodes||[]).map((ep,j)=>`
+<button class="ep" onclick="playEpisode(${i},${j},this)">
+Épisode ${esc(ep.number??j+1)}
+</button>`).join("")}
+</div>
+</div>`).join("");
+}else{
+seasonHTML=`<div class="box">
+<p>Aucun lien d'épisode enregistré pour cet anime.</p>
+<p>Nombre total annoncé par AniList : ${esc(a.episodes||"inconnu")}</p>
+<p class="small">AniList fournit le nombre d'épisodes, pas les liens vidéo.</p>
+</div>`;
 }
 
-function renderSeasonEpisodes() {
-  const list = episodeData
-    .filter(ep => Number(ep.sa) === currentSeason)
-    .sort((a, b) => Number(a.epi) - Number(b.epi));
-
-  const select = document.getElementById("episode");
-  select.innerHTML = "";
-
-  list.forEach(ep => {
-    select.add(new Option(
-      `Épisode ${ep.epi}${ep.version ? " · " + ep.version : ""}`,
-      ep.epi
-    ));
-  });
-
-  const box = document.getElementById("episodes");
-  box.innerHTML = "";
-
-  list.forEach(ep => {
-    const btn = document.createElement("button");
-    btn.className = "ep";
-    btn.textContent = ep.epi;
-    btn.title = ep.version || "Version non précisée";
-    btn.onclick = () => playEpisode(Number(ep.epi));
-    box.appendChild(btn);
-  });
-
-  if (list.length) {
-    const first = list[0];
-    currentEpisode = Number(first.epi);
-    select.value = String(currentEpisode);
-    playEpisode(currentEpisode);
-  } else {
-    document.getElementById("video").src = "about:blank";
-    document.getElementById("episodeStatus").textContent =
-      "Aucun épisode disponible pour cette saison.";
-  }
+$("details").innerHTML=`
+<h1>${esc(title(a))}</h1>
+<img src="${esc(cover(a))}" style="width:130px;max-height:190px;object-fit:cover">
+<p>${esc(a.description||"")}</p>
+<div class="box">
+<h3 class="gold">Lecteur vidéo Uqload</h3>
+<p id="playerStatus">Sélectionne un épisode.</p>
+<iframe id="player" src="about:blank" allowfullscreen></iframe>
+<button id="external" style="display:none" onclick="window.open(window.videoURL,'_blank')">Ouvrir la vidéo</button>
+</div>
+<h2 class="gold">Saisons et épisodes</h2>${seasonHTML}`;
+show("detail");
 }
 
-function changeSeason() {
-  currentSeason = Number(document.getElementById("season").value);
-  renderSeasonEpisodes();
+function playEpisode(si,ei,btn){
+const local=findLocal(current);
+const ep=local?.seasons?.[si]?.episodes?.[ei];
+if(!ep){alert("Épisode introuvable.");return}
+const url=ep.embedUrl||ep.embed_url||ep.url||ep.vf||ep.vostfr||ep.sourceUrl;
+if(!url){alert("Lien Uqload manquant dans episodes.json.");return}
+window.videoURL=url;
+$("player").src=url;
+$("playerStatus").textContent="Saison "+(si+1)+" · Épisode "+(ep.number||ei+1);
+$("external").style.display="inline-block";
+document.querySelectorAll(".ep").forEach(x=>x.classList.remove("active"));
+btn.classList.add("active");
 }
 
-function playSelectedEpisode() {
-  playEpisode(Number(document.getElementById("episode").value));
+function getFavs(){
+try{return JSON.parse(localStorage.getItem("oz_favs")||"[]")}catch(e){return[]}
+}
+function toggleFavorite(id){
+let f=getFavs();
+f=f.includes(id)?f.filter(x=>x!==id):[...f,id];
+localStorage.setItem("oz_favs",JSON.stringify(f));
+renderFavorites();
+}
+function renderFavorites(){
+const ids=getFavs();
+const list=animeList.filter(a=>ids.includes(a.id));
+$("fav").innerHTML=list.map(card).join("")||'<p class="msg">Aucun favori.</p>';
 }
 
-function playEpisode(number) {
-  currentEpisode = number;
-
-  const ep = episodeData.find(item =>
-    Number(item.sa) === currentSeason &&
-    Number(item.epi) === currentEpisode
-  );
-
-  if (!ep) return;
-
-  document.getElementById("video").src =
-    ep.link ||
-    `${BASE}/embed/serie/${encodeURIComponent(currentAnime.tmdb || currentAnime.imdb)}?sa=${currentSeason}&epi=${currentEpisode}`;
-
-  document.getElementById("episodeStatus").textContent =
-    "Version annoncée : " + (ep.version || "non précisée");
-
-  document.querySelectorAll(".ep").forEach(btn => {
-    btn.classList.toggle("active", Number(btn.textContent) === number);
-  });
-
-  document.getElementById("episode").value = String(number);
+async function init(){
+await loadDatabase();
+await loadPopular();
 }
-
-function showHome() {
-  document.getElementById("video").src = "about:blank";
-  document.getElementById("details").classList.add("hidden");
-  document.getElementById("home").classList.remove("hidden");
-}
-
-loadCatalogue();
+init();
 </script>
 </body>
-    </html> 
+</html> 
