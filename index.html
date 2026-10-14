@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B0614">
+<title>Otaku_zone</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0B0614;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px 16px;
+  background: #160D26;
+  border-bottom: 2px solid #8B5CF6;
+}
+
+header h1 {
+  margin: 0;
+  color: #A78BFA;
+  font-size: 27px;
+}
+
+header p {
+  color: #C4B5FD;
+  margin-bottom: 0;
+}
+
+.search {
+  padding: 16px;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #8B5CF6;
+  background: #1A1029;
+  color: white;
+  font-size: 16px;
+}
+
+h2 {
+  padding: 0 16px;
+  color: #C4B5FD;
+}
+
+.catalogue {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 16px;
+}
+
+.card {
+  background: #1A1029;
+  border: 1px solid #382454;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.poster {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #32145D, #10091C);
+  color: #C4B5FD;
+  font-size: 35px;
+}
+
+.info {
+  padding: 12px;
+}
+
+.info h3 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+.info p {
+  color: #C4B5FD;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: 0;
+  border-radius: 7px;
+  background: #8B5CF6;
+  color: white;
+  font-weight: bold;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #9CA3AF;
+  font-size: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Otaku_zone</h1>
+  <p>Ton univers anime 💜</p>
+</header>
+
+<div class="search">
+  <input
+    id="search"
+    type="search"
+    placeholder="Rechercher un animé..."
+    oninput="afficherAnimes()">
+</div>
+
+<h2>🔥 Catalogue anime</h2>
+
+<div id="catalogue" class="catalogue">
+  Chargement du catalogue...
+</div>
+
+<footer>
+  Otaku_zone · Ton univers anime
+</footer>
+
+<script>
+let animes = [];
+
+function afficherAnimes() {
+  const recherche = document
+    .getElementById("search")
+    .value.toLowerCase();
+
+  const catalogue = document.getElementById("catalogue");
+
+  const filtres = animes.filter(anime =>
+    anime.title.toLowerCase().includes(recherche)
+  );
+
+  if (filtres.length === 0) {
+    catalogue.innerHTML = "<p>Aucun animé trouvé.</p>";
+    return;
+  }
+
+  catalogue.innerHTML = filtres.map(anime => `
+    <article class="card">
+      <div class="poster">
+        ${anime.image
+          ? `<img src="${anime.image}" alt=""
+             style="width:100%;height:100%;object-fit:cover">`
+          : "🎬"}
+      </div>
+      <div class="info">
+        <h3>${anime.title}</h3>
+        <p>${anime.description || ""}</p>
+        <button onclick="alert('Les saisons et épisodes seront ajoutés prochainement !')">
+          Découvrir
+        </button>
+      </div>
+    </article>
+  `).join("");
+}
+
+fetch("./episodes.json")
+  .then(response => {
+    if (!response.ok) throw new Error("Fichier introuvable");
+    return response.json();
+  })
+  .then(data => {
+    animes = data.animes || [];
+    afficherAnimes();
+  })
+  .catch(() => {
+    document.getElementById("catalogue").innerHTML =
+      "<p>Impossible de charger le catalogue. Vérifie episodes.json.</p>";
+  });
+</script>
+
+</body>
+</html>
