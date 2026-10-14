@@ -1,3 +1,44 @@
 {
-"animes": []
+"animes": [
+{
+"id": "gurren-lagann",
+"anilistId": 2001,
+"title": "Gurren Lagann",
+"image": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx2001.jpg",
+"seasons": [
+{
+"number": 1,
+"title": "Saison 1",
+"episodes": [
+{"number": 1, "title": "Épisode 1", "url": ""},
+{"number": 2, "title": "Épisode 2", "url": ""},
+{"number": 3, "title": "Épisode 3", "url": ""},
+{"number": 4, "title": "Épisode 4", "url": ""},
+{"number": 5, "title": "Épisode 5", "url": ""},
+{"number": 6, "title": "Épisode 6", "url": ""},
+{"number": 7, "title": "Épisode 7", "url": ""},
+{"number": 8, "title": "Épisode 8", "url": ""},
+{"number": 9, "title": "Épisode 9", "url": ""},
+{"number": 10, "title": "Épisode 10", "url": ""},
+{"number": 11, "title": "Épisode 11", "url": ""},
+{"number": 12, "title": "Épisode 12", "url": ""},
+{"number": 13, "title": "Épisode 13", "url": ""},
+{"number": 14, "title": "Épisode 14", "url": ""},
+{"number": 15, "title": "Épisode 15", "url": ""},
+{"number": 16, "title": "Épisode 16", "url": ""},
+{"number": 17, "title": "Épisode 17", "url": ""},
+{"number": 18, "title": "Épisode 18", "url": ""},
+{"number": 19, "title": "Épisode 19", "url": ""},
+{"number": 20, "title": "Épisode 20", "url": ""},
+{"number": 21, "title": "Épisode 21", "url": ""},
+{"number": 22, "title": "Épisode 22", "url": ""},
+{"number": 23, "title": "Épisode 23", "url": ""},
+{"number": 24, "title": "Épisode 24", "url": ""},
+{"number": 25, "title": "Épisode 25", "url": ""},
+{"number": 26, "title": "Épisode 26", "url": ""}
+]
 }
+]
+}
+]
+  }
