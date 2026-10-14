@@ -1,82 +1,91 @@
 {
-  "app": "Otaku_zone",
-  "theme": {
-    "background": "#000000",
-    "primary": "#D4AF37",
-    "text": "#FFFFFF"
-  },
-  "animes": [
-    {
-      "id": 1,
-      "title": "Demon Slayer",
-      "image": "",
-      "description": "Un jeune chasseur de démons.",
-      "seasons": [
-        {
-          "number": 1,
-          "title": "Saison 1",
-          "episodes": [
-            {
-              "number": 1,
-              "title": "Cruauté",
-              "url": ""
-            },
-            {
-              "number": 2,
-              "title": "Le formateur Sakonji Urokodaki",
-              "url": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 2,
-      "title": "Attack on Titan",
-      "image": "",
-      "description": "L'humanité lutte pour survivre.",
-      "seasons": [
-        {
-          "number": 1,
-          "title": "Saison 1",
-          "episodes": [
-            {
-              "number": 1,
-              "title": "À toi, dans 2000 ans",
-              "url": ""
-            },
-            {
-              "number": 2,
-              "title": "Ce jour-là",
-              "url": ""
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "title": "One Piece",
-      "image": "",
-      "description": "L'aventure de Luffy et son équipage.",
-      "seasons": [
-        {
-          "number": 1,
-          "title": "Saison 1",
-          "episodes": [
-            {
-              "number": 1,
-              "title": "Je suis Luffy !",
-              "url": ""
-            },
-            {
-              "number": 2,
-              "title": "Le grand épéiste !",
-              "url": ""
-            }
-          ]
-        }
-      ]
-    }
-  ]
-        }
+"app": "Otaku_zone",
+"theme": {
+"background": "#000000",
+"primary": "#D4AF37",
+"text": "#FFFFFF"
+},
+"animes": [
+{
+"id": 1,
+"title": "Demon Slayer",
+"image": "",
+"description": "Un jeune chasseur de démons part à la recherche d'un remède pour sauver sa sœur.",
+"description_fr": "Un jeune chasseur de démons part à la recherche d'un remède pour sauver sa sœur.",
+"vf": null,
+"vostfr": null,
+"seasons": [
+{
+"number": 1,
+"title": "Saison 1",
+"episodes": [
+{
+"number": 1,
+"title": "Cruauté",
+"url": ""
+},
+{
+"number": 2,
+"title": "Le formateur Sakonji Urokodaki",
+"url": ""
+}
+]
+}
+]
+},
+{
+"id": 2,
+"title": "Attack on Titan",
+"image": "",
+"description": "L'humanité lutte pour survivre face à des créatures géantes.",
+"description_fr": "L'humanité lutte pour survivre face à des créatures géantes.",
+"vf": null,
+"vostfr": null,
+"seasons": [
+{
+"number": 1,
+"title": "Saison 1",
+"episodes": [
+{
+"number": 1,
+"title": "À toi, dans 2000 ans",
+"url": ""
+},
+{
+"number": 2,
+"title": "Ce jour-là",
+"url": ""
+}
+]
+}
+]
+},
+{
+"id": 3,
+"title": "One Piece",
+"image": "",
+"description": "Luffy prend la mer pour trouver le légendaire trésor One Piece et devenir le roi des pirates.",
+"description_fr": "Luffy prend la mer pour trouver le légendaire trésor One Piece et devenir le roi des pirates.",
+"vf": null,
+"vostfr": null,
+"seasons": [
+{
+"number": 1,
+"title": "Saison 1",
+"episodes": [
+{
+"number": 1,
+"title": "Je suis Luffy !",
+"url": ""
+},
+{
+"number": 2,
+"title": "Le grand épéiste !",
+"url": ""
+}
+]
+}
+]
+}
+]
+}
