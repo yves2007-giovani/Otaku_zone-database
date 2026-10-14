@@ -179,6 +179,7 @@ footer {
     <input id="search" type="search"
       placeholder="Rechercher un animé..."
       autocomplete="off">
+
     <h2>Catalogue anime</h2>
     <p id="status">Chargement du catalogue...</p>
     <div id="catalogue" class="catalogue"></div>
@@ -190,11 +191,15 @@ footer {
   </section>
 
   <section id="animePage">
-    <button class="back" onclick="goHome()">← Retour au catalogue</button>
+    <button class="back" onclick="goHome()">
+      ← Retour au catalogue
+    </button>
+
     <div id="hero" class="hero"></div>
     <h2 id="animeTitle"></h2>
     <p id="animeDescription"></p>
     <p id="animeDetails"></p>
+
     <h2>Saisons et épisodes</h2>
     <div id="seasonList"></div>
   </section>
@@ -216,6 +221,7 @@ const $ = id => document.getElementById(id);
 
 async function fetchAniList() {
   const currentRequest = ++requestNumber;
+
   $("status").textContent = "Chargement des animés...";
   $("catalogue").innerHTML = "";
   $("previous").disabled = true;
@@ -343,13 +349,17 @@ function getTitle(anime) {
 }
 
 function openAnime(id) {
-  const anime = animes.find(item => Number(item.id) === Number(id));
+  const anime = animes.find(
+    item => Number(item.id) === Number(id)
+  );
+
   if (!anime) return;
 
   $("home").style.display = "none";
   $("animePage").style.display = "block";
 
   $("animeTitle").textContent = getTitle(anime);
+
   $("animeDescription").textContent =
     stripHTML(anime.description || "Aucune description disponible.");
 
@@ -358,12 +368,16 @@ function openAnime(id) {
     anime.episodes ? "Épisodes annoncés : " + anime.episodes : "",
     anime.seasonYear ? "Année : " + anime.seasonYear : "",
     anime.status ? "Statut : " + anime.status : "",
-    anime.genres?.length ? "Genres : " + anime.genres.join(", ") : ""
+    anime.genres?.length
+      ? "Genres : " + anime.genres.join(", ")
+      : ""
   ].filter(Boolean).join(" · ");
 
   const image = anime.coverImage?.large || "";
+
   $("hero").innerHTML = image
-    ? `<img src="${escapeHTML(image)}" alt="${escapeHTML(getTitle(anime))}">`
+    ? `<img src="${escapeHTML(image)}"
+         alt="${escapeHTML(getTitle(anime))}">`
     : "🎬";
 
   $("seasonList").innerHTML = `
@@ -423,4 +437,4 @@ $("next").addEventListener("click", () => {
 fetchAniList();
 </script>
 </body>
-  </html>
+</html>
