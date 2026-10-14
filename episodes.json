@@ -10,7 +10,11 @@
           "number": 1,
           "title": "Saison 1",
           "episodes": [
-            {"number": 1, "title": "Épisode 1", "url": ""},
+            {
+              "number": 1,
+              "title": "Épisode 1",
+              "url": "https://prx-vi-a-1.vmpx.online/hls2/04/00984/jfi5g0wwf6k8_l/index-v1-a1.m3u8?t=bzZUxfi_fj-yRlTj53ZuKGrGQ9TmvknTra6Y3dcD4iY=&s=1792011450&e=43200&v=&srv=box-1433-p10&i=0.4&sp=0&asn=0"
+            },
             {"number": 2, "title": "Épisode 2", "url": ""},
             {"number": 3, "title": "Épisode 3", "url": ""},
             {"number": 4, "title": "Épisode 4", "url": ""},
