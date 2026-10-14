@@ -21,7 +21,7 @@ button:active,.active{background:#d4af37;color:#000}
 #status{color:#d4af37;font-size:14px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 .card{background:#151515;border-radius:10px;overflow:hidden;cursor:pointer;border:1px solid #292929}
-.poster{height:190px;background:linear-gradient(135deg,#222,#5b4512);display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;color:#d4af37;font-weight:bold;font-size:20px}
+.poster{height:190px;background:#222;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px;color:#d4af37;font-weight:bold;font-size:18px}
 .card img{display:block;width:100%;height:190px;object-fit:cover}
 .card h3{font-size:14px;padding:10px;margin:0}
 #details{margin-top:22px;padding:14px;background:#121212;border:1px solid #333;border-radius:12px}
@@ -29,8 +29,8 @@ button:active,.active{background:#d4af37;color:#000}
 #seasons{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .episodes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
 .episodes button{padding:12px 4px}
-video{display:block;width:100%;max-height:450px;background:#000;margin-top:15px}
 #episodeInfo{color:#d4af37;font-size:14px}
+#animeInfo{color:#bbb;line-height:1.5}
 @media(min-width:650px){
 .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 .poster,.card img{height:240px}
@@ -65,58 +65,108 @@ video{display:block;width:100%;max-height:450px;background:#000;margin-top:15px}
 <div id="episodes" class="episodes"></div>
 
 <p id="episodeInfo"></p>
-<video id="player" controls playsinline></video>
 </section>
 </main>
 
 <script>
+const API="https://graphql.anilist.co";
 const DB="https://raw.githubusercontent.com/yves2007-giovani/Otaku_zone-database/main/episodes.json";
 
 const $=id=>document.getElementById(id);
 let animes=[];
+let database=[];
 let currentAnime=null;
-let currentSeason=null;
+
+async function api(query,variables={}){
+ const response=await fetch(API,{
+  method:"POST",
+  headers:{"Content-Type":"application/json","Accept":"application/json"},
+  body:JSON.stringify({query,variables})
+ });
+ if(!response.ok)throw Error("AniList HTTP "+response.status);
+ const data=await response.json();
+ if(data.errors)throw Error(data.errors[0].message);
+ return data.data;
+}
+
+async function loadDatabase(){
+ try{
+  const r=await fetch(DB+"?t="+Date.now());
+  if(r.ok){
+   const d=await r.json();
+   database=Array.isArray(d.animes)?d.animes:[];
+  }
+ }catch(e){
+  console.log("Base locale indisponible",e);
+ }
+}
+
+async function loadCatalog(search=""){
+ $("status").textContent="Chargement des animes...";
+ $("catalog").innerHTML="";
+
+ try{
+  const query=`
+   query($search:String){
+    Page(page:1,perPage:30){
+     media(type:ANIME,isAdult:false,search:$search,
+      sort:POPULARITY_DESC){
+      id
+      episodes
+      format
+      seasonYear
+      averageScore
+      title{romaji english native}
+      coverImage{large}
+      description(asHtml:false)
+     }
+    }
+   }`;
+
+  const data=await api(query,{search:search||null});
+  animes=data.Page.media;
+  renderCatalog(animes);
+ }catch(e){
+  console.error(e);
+  $("status").textContent=
+   "Impossible de charger AniList. Vérifie ta connexion et réessaie.";
+ }
+}
 
 function titleOf(a){
- return a.title?.english || a.title?.romaji || a.title || "Anime";
+ return a.title.english||a.title.romaji||a.title.native||"Anime";
 }
 
 function renderCatalog(list){
  const catalog=$("catalog");
  catalog.innerHTML="";
 
+ $("status").textContent=list.length+" anime(s) trouvés";
+
  if(!list.length){
   $("status").textContent="Aucun anime trouvé.";
   return;
  }
 
- $("status").textContent=list.length+" anime(s)";
-
  list.forEach(anime=>{
   const card=document.createElement("article");
   card.className="card";
 
-  if(anime.image){
-   const img=document.createElement("img");
-   img.src=anime.image;
-   img.alt=anime.title;
-   img.loading="lazy";
-   img.onerror=()=>{
-    const fallback=document.createElement("div");
-    fallback.className="poster";
-    fallback.textContent=anime.title;
-    img.replaceWith(fallback);
-   };
-   card.appendChild(img);
-  }else{
-   const poster=document.createElement("div");
-   poster.className="poster";
-   poster.textContent=anime.title;
-   card.appendChild(poster);
-  }
+  const img=document.createElement("img");
+  img.src=anime.coverImage.large;
+  img.alt=titleOf(anime);
+  img.loading="lazy";
+  img.onerror=()=>{
+   const p=document.createElement("div");
+   p.className="poster";
+   p.textContent=titleOf(anime);
+   img.replaceWith(p);
+  };
+
+  card.appendChild(img);
 
   const name=document.createElement("h3");
-  name.textContent=anime.title;
+  name.textContent=titleOf(anime);
   card.appendChild(name);
 
   card.onclick=()=>openAnime(anime);
@@ -124,118 +174,109 @@ function renderCatalog(list){
  });
 }
 
-async function loadDatabase(){
- try{
-  const response=await fetch(DB+"?t="+Date.now());
-  if(!response.ok)throw Error("HTTP "+response.status);
-
-  const data=await response.json();
-  if(!Array.isArray(data.animes))throw Error("Format JSON incorrect");
-
-  animes=data.animes;
-  renderCatalog(animes);
- }catch(error){
-  console.error(error);
-  $("status").textContent="Base inaccessible. Vérifie episodes.json et ta connexion.";
- }
+function findLocalAnime(anime){
+ return database.find(a=>
+  Number(a.anilistId)===Number(anime.id)
+ )||database.find(a=>
+  String(a.title||"").toLowerCase()===titleOf(anime).toLowerCase()
+ );
 }
 
 function openAnime(anime){
  currentAnime=anime;
- currentSeason=null;
 
  $("details").classList.remove("hidden");
  $("details").scrollIntoView({behavior:"smooth"});
- $("animeTitle").textContent=anime.title;
- $("animeInfo").textContent=anime.description_fr||"Choisis une saison.";
+
+ $("animeTitle").textContent=titleOf(anime);
+ $("animeInfo").textContent=
+  "Année : "+(anime.seasonYear||"inconnue")+
+  " | Note : "+(anime.averageScore||"inconnue")+
+  " | Épisodes : "+(anime.episodes||"inconnu");
+
  $("seasons").innerHTML="";
  $("episodes").innerHTML="";
  $("episodeInfo").textContent="";
- $("player").pause();
- $("player").removeAttribute("src");
- $("player").load();
 
- if(!Array.isArray(anime.seasons)||!anime.seasons.length){
-  $("animeInfo").textContent="Aucune saison enregistrée.";
-  return;
+ const local=findLocalAnime(anime);
+
+ if(local&&Array.isArray(local.seasons)&&local.seasons.length){
+  local.seasons.forEach((season,index)=>{
+   const b=document.createElement("button");
+   b.textContent=season.title||"Saison "+season.number;
+   b.onclick=()=>showEpisodes(season);
+   $("seasons").appendChild(b);
+
+   if(index===0)showEpisodes(season);
+  });
+ }else{
+  const total=Number(anime.episodes)||0;
+  const season={number:1,title:"Saison 1",episodes:[]};
+
+  for(let i=1;i<=total;i++){
+   season.episodes.push({number:i,title:"Épisode "+i,url:""});
+  }
+
+  const b=document.createElement("button");
+  b.textContent="Saison 1";
+  b.classList.add("active");
+  b.onclick=()=>showEpisodes(season);
+  $("seasons").appendChild(b);
+
+  showEpisodes(season);
  }
-
- anime.seasons.forEach((season,index)=>{
-  const button=document.createElement("button");
-  button.textContent=season.title||"Saison "+season.number;
-  button.onclick=()=>showEpisodes(season,button);
-  $("seasons").appendChild(button);
-
-  if(index===0)showEpisodes(season,button);
- });
 }
 
-function showEpisodes(season,button){
- currentSeason=season;
-
+function showEpisodes(season){
  document.querySelectorAll("#seasons button")
- .forEach(b=>b.classList.remove("active"));
- button.classList.add("active");
+ .forEach(b=>{
+  b.classList.toggle(
+   "active",
+   b.textContent===(season.title||"Saison "+season.number)
+  );
+ });
 
- $("episodes").innerHTML="";
+ const episodes=$("episodes");
+ episodes.innerHTML="";
  $("episodeInfo").textContent="";
 
- const list=season.episodes||[];
-
- if(!list.length){
-  $("episodeInfo").textContent="Aucun épisode enregistré.";
-  return;
- }
-
- list.forEach(ep=>{
+ (season.episodes||[]).forEach(ep=>{
   const b=document.createElement("button");
   b.textContent=ep.number;
   b.title=ep.title||"Épisode "+ep.number;
-  b.onclick=()=>playEpisode(ep);
-  $("episodes").appendChild(b);
+
+  b.onclick=()=>{
+   const url=(ep.url||ep.vf||ep.vostfr||"").trim();
+
+   if(!url){
+    $("episodeInfo").textContent=
+     "Épisode "+ep.number+" : aucun lien vidéo enregistré.";
+    return;
+   }
+
+   $("episodeInfo").textContent=
+    "Lien disponible pour l'épisode "+ep.number+
+    ". Le lecteur vidéo n'est pas intégré à cette version.";
+  };
+
+  episodes.appendChild(b);
  });
 }
 
-function playEpisode(ep){
- const url=(ep.url||ep.vf||ep.vostfr||"").trim();
+let searchTimer;
 
- if(!url){
-  $("episodeInfo").textContent=
-   "Épisode "+ep.number+" : lien vidéo manquant dans episodes.json.";
-  return;
- }
-
- if(!/^https?:\/\//i.test(url)||/\/dl\//i.test(new URL(url).pathname)){
-  $("episodeInfo").textContent=
-   "Ce lien n'est pas une adresse de lecture directe.";
-  return;
- }
-
- const player=$("player");
- player.src=url;
- player.load();
- $("episodeInfo").textContent="Épisode "+ep.number+" : chargement...";
- player.play().catch(()=>{
-  $("episodeInfo").textContent=
-   "Lecture impossible avec ce lien ou ce format vidéo.";
- });
- player.scrollIntoView({behavior:"smooth",block:"center"});
-}
-
-function searchAnime(){
- const q=$("search").value.trim().toLowerCase();
- renderCatalog(animes.filter(a=>
-  String(a.title||"").toLowerCase().includes(q)
- ));
-}
-
-$("searchBtn").addEventListener("click",searchAnime);
-$("search").addEventListener("input",searchAnime);
-$("search").addEventListener("keydown",e=>{
- if(e.key==="Enter")searchAnime();
+$("search").addEventListener("input",()=>{
+ clearTimeout(searchTimer);
+ searchTimer=setTimeout(()=>{
+  loadCatalog($("search").value.trim());
+ },500);
 });
 
-loadDatabase();
+$("searchBtn").addEventListener("click",()=>{
+ loadCatalog($("search").value.trim());
+});
+
+loadDatabase().then(()=>loadCatalog());
 </script>
 </body>
-  </html>
+                          </html>
