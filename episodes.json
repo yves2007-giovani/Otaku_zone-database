@@ -1,5 +1,31 @@
-
 {
   "app": "Otaku_zone",
-  "seasons": []
+  "theme": {
+    "background": "#0B0614",
+    "primary": "#8B5CF6",
+    "text": "#FFFFFF"
+  },
+  "animes": [
+    {
+      "id": 1,
+      "title": "Demon Slayer",
+      "image": "",
+      "description": "Un jeune chasseur de démons.",
+      "seasons": []
+    },
+    {
+      "id": 2,
+      "title": "Attack on Titan",
+      "image": "",
+      "description": "L'humanité lutte pour survivre.",
+      "seasons": []
+    },
+    {
+      "id": 3,
+      "title": "One Piece",
+      "image": "",
+      "description": "L'aventure de Luffy et son équipage.",
+      "seasons": []
+    }
+  ]
 }
