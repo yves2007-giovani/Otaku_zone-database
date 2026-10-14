@@ -1,8 +1,8 @@
 {
   "app": "Otaku_zone",
   "theme": {
-    "background": "#0B0614",
-    "primary": "#8B5CF6",
+    "background": "#000000",
+    "primary": "#D4AF37",
     "text": "#FFFFFF"
   },
   "animes": [
@@ -11,21 +11,72 @@
       "title": "Demon Slayer",
       "image": "",
       "description": "Un jeune chasseur de démons.",
-      "seasons": []
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Saison 1",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Cruauté",
+              "url": ""
+            },
+            {
+              "number": 2,
+              "title": "Le formateur Sakonji Urokodaki",
+              "url": ""
+            }
+          ]
+        }
+      ]
     },
     {
       "id": 2,
       "title": "Attack on Titan",
       "image": "",
       "description": "L'humanité lutte pour survivre.",
-      "seasons": []
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Saison 1",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "À toi, dans 2000 ans",
+              "url": ""
+            },
+            {
+              "number": 2,
+              "title": "Ce jour-là",
+              "url": ""
+            }
+          ]
+        }
+      ]
     },
     {
       "id": 3,
       "title": "One Piece",
       "image": "",
       "description": "L'aventure de Luffy et son équipage.",
-      "seasons": []
+      "seasons": [
+        {
+          "number": 1,
+          "title": "Saison 1",
+          "episodes": [
+            {
+              "number": 1,
+              "title": "Je suis Luffy !",
+              "url": ""
+            },
+            {
+              "number": 2,
+              "title": "Le grand épéiste !",
+              "url": ""
+            }
+          ]
+        }
+      ]
     }
   ]
-}
+            }
