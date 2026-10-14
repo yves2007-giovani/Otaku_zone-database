@@ -3,729 +3,955 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#100b18">
+<meta name="theme-color" content="#080808">
 <title>Otaku_zone</title>
 
 <style>
 :root {
-  --bg: #0c0912;
-  --panel: #191322;
-  --panel2: #241a30;
-  --purple: #a855f7;
-  --gold: #e7c66a;
-  --text: #fff;
-  --muted: #b9afc6;
+  --black: #080808;
+  --panel: #151515;
+  --gold: #d4af37;
+  --lightgold: #ffe58a;
+  --white: #ffffff;
+  --muted: #b8b8b8;
 }
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--text);
+  background: var(--black);
+  color: var(--white);
   font-family: Arial, sans-serif;
 }
+
 header {
+  padding: 16px;
+  background: #101010;
+  border-bottom: 2px solid var(--gold);
   position: sticky;
   top: 0;
-  z-index: 20;
-  background: #100b18f5;
-  border-bottom: 1px solid #382746;
-  padding: 13px;
+  z-index: 10;
 }
-.topbar {
+
+.header-top {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  align-items: center;
 }
+
 .logo {
   color: var(--gold);
-  font-size: 23px;
+  font-size: 25px;
   font-weight: bold;
+  margin: 0;
 }
-.iconbtn, button {
-  border: 0;
-  border-radius: 9px;
-  background: var(--purple);
-  color: white;
-  padding: 10px 13px;
-  font-weight: bold;
-  cursor: pointer;
+
+.tagline {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 5px 0 0;
 }
-.iconbtn {
-  background: var(--panel2);
-  border: 1px solid #493256;
+
+.icon-button {
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold);
+  border-radius: 8px;
+  padding: 9px;
+  font-size: 17px;
 }
-.searchbox { position: relative; margin-top: 12px; }
-#search {
+
+main {
+  padding: 14px;
+  max-width: 1100px;
+  margin: auto;
+}
+
+.search-box {
+  position: relative;
+  margin: 12px 0 20px;
+}
+
+input[type="search"] {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   background: var(--panel);
   color: white;
-  border: 1px solid #493256;
+  border: 1px solid var(--gold);
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 16px;
+  outline: none;
 }
-#suggestions {
+
+.suggestions {
   position: absolute;
-  z-index: 30;
   top: 100%;
   left: 0;
   right: 0;
-  background: #21182c;
-  border: 1px solid #493256;
-  border-radius: 9px;
+  z-index: 20;
+  background: #1b1b1b;
+  border: 1px solid #8c7125;
+  border-radius: 10px;
   overflow: hidden;
 }
+
 .suggestion {
-  padding: 12px;
-  border-bottom: 1px solid #382746;
-  cursor: pointer;
-}
-.suggestion:hover { background: #392348; }
-nav {
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 10px 12px;
-  background: #100b18;
-}
-nav button { white-space: nowrap; }
-nav button.active { background: var(--gold); color: #1a1020; }
-main { padding: 13px; padding-bottom: 85px; }
-h2 { font-size: 19px; margin: 22px 0 12px; }
-.sub { color: var(--muted); font-size: 13px; }
-.carousel {
-  display: flex;
+  align-items: center;
   gap: 12px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 10px;
-}
-.hero {
-  min-width: 76%;
-  max-width: 76%;
-  height: 235px;
-  position: relative;
-  border-radius: 13px;
-  overflow: hidden;
-  scroll-snap-align: start;
+  padding: 9px;
   cursor: pointer;
-  background: var(--panel);
+  border-bottom: 1px solid #333;
 }
+
+.suggestion img {
+  width: 42px;
+  height: 58px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.suggestion:hover {
+  background: #302714;
+}
+
+h2 {
+  color: var(--lightgold);
+  font-size: 19px;
+  margin: 22px 0 12px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-heading h2 {
+  border-left: 3px solid var(--gold);
+  padding-left: 10px;
+}
+
+.hero {
+  position: relative;
+  height: 300px;
+  border: 1px solid #69551e;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #171717;
+}
+
 .hero img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: .7;
 }
-.hero::after {
-  content: "";
+
+.hero-overlay {
   position: absolute;
-  inset: 30% 0 0;
-  background: linear-gradient(transparent, #09060ff5);
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    #000000 0%,
+    rgba(0,0,0,.8) 28%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 18px;
 }
-.heroText {
-  position: absolute;
-  z-index: 1;
-  bottom: 12px;
-  left: 12px;
-  right: 12px;
-}
-.heroText h3 { margin: 0 0 8px; }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
-  gap: 12px;
-}
-.card {
-  min-width: 0;
-  background: var(--panel);
-  border: 1px solid #30233b;
-  border-radius: 11px;
-  overflow: hidden;
-  cursor: pointer;
-}
-.card img {
-  width: 100%;
-  height: 210px;
-  object-fit: cover;
-  display: block;
-}
-.cardBody { padding: 9px; }
-.card h3 { font-size: 14px; margin: 0 0 8px; line-height: 1.4; }
-.card p { color: var(--muted); font-size: 12px; margin: 5px 0; }
-.card button { width: 100%; margin-top: 7px; padding: 9px 4px; }
+
 .badge {
   display: inline-block;
+  width: fit-content;
+  background: var(--gold);
+  color: #111;
+  padding: 5px 9px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.hero h2 {
+  color: white;
+  font-size: 25px;
+  margin: 10px 0;
+}
+
+.hero p {
+  color: #ddd;
+  font-size: 13px;
+  margin: 0;
+}
+
+button {
+  cursor: pointer;
+}
+
+.gold-button {
+  background: var(--gold);
+  color: #111;
+  border: 0;
+  border-radius: 7px;
+  padding: 11px 15px;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+.anime-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 3px 0 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--gold) #222;
+}
+
+.anime-card {
+  flex: 0 0 135px;
+  min-width: 0;
+  background: var(--panel);
+  border: 1px solid #302819;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.anime-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+}
+
+.anime-card img {
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+  display: block;
+  background: #222;
+}
+
+.anime-info {
+  padding: 9px;
+}
+
+.anime-info h3 {
+  font-size: 13px;
+  margin: 0 0 7px;
+  line-height: 1.4;
+}
+
+.anime-info p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 0;
+}
+
+.anime-card .card-button {
+  background: transparent;
+  border: 1px solid var(--gold);
   color: var(--gold);
-  background: #392b1b;
-  padding: 4px 7px;
+  width: 100%;
+  padding: 8px 4px;
+  margin-top: 9px;
   border-radius: 6px;
   font-size: 11px;
 }
-#details img.poster {
-  width: 155px;
-  max-width: 48%;
-  border-radius: 12px;
-  float: left;
-  margin: 0 14px 12px 0;
+
+.status {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
-.description { line-height: 1.65; color: #e0d8e8; }
-.clear { clear: both; }
-.related {
-  background: var(--panel);
-  border: 1px solid #382746;
-  border-radius: 9px;
-  padding: 12px;
-  margin: 8px 0;
+
+#animePage {
+  display: none;
 }
-input, select {
-  max-width: 100%;
-  background: var(--panel);
-  color: white;
-  border: 1px solid #493256;
-  padding: 11px;
+
+.back-button {
+  background: #202020;
+  color: var(--gold);
+  border: 1px solid #5d4b20;
   border-radius: 8px;
+  padding: 11px;
+  margin-bottom: 15px;
 }
-.field { margin: 15px 0; }
-.field label { display: block; margin-bottom: 8px; }
-.field input, .field select { width: 100%; }
-.secondary { background: var(--panel2); border: 1px solid #493256; }
-.danger { background: #8d2938; }
-#status { color: var(--gold); text-align: center; padding: 12px; }
+
+.detail-poster {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  background: #151515;
+  border-radius: 12px;
+}
+
+.detail-description {
+  color: #ddd;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.detail-meta {
+  color: var(--gold);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.detail-link {
+  display: inline-block;
+  background: var(--gold);
+  color: #111;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 11px 14px;
+  border-radius: 7px;
+  margin: 5px 5px 5px 0;
+}
+
+.settings-panel {
+  display: none;
+  padding: 14px;
+  margin-top: 12px;
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.settings-panel label {
+  display: block;
+  margin: 10px 0;
+}
+
+.settings-panel select {
+  background: #222;
+  color: white;
+  border: 1px solid var(--gold);
+  padding: 9px;
+  border-radius: 6px;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  gap: 5px;
+  position: sticky;
+  bottom: 0;
+  background: #101010;
+  border-top: 1px solid #66521d;
+  padding: 9px 3px;
+  z-index: 9;
+}
+
+.navbar button {
+  background: transparent;
+  color: #bbb;
+  border: 0;
+  padding: 7px 4px;
+  font-size: 11px;
+}
+
+.navbar button.active {
+  color: var(--gold);
+}
+
 footer {
   text-align: center;
-  padding: 20px;
-  color: var(--muted);
+  padding: 22px;
+  color: var(--gold);
   font-size: 12px;
+  border-top: 1px solid #302819;
+  margin-top: 25px;
 }
-.hidden { display: none !important; }
-@media(min-width:700px) {
-  .grid { grid-template-columns: repeat(5,minmax(0,1fr)); }
-  .hero { min-width: 280px; max-width: 280px; }
-  main { max-width: 1200px; margin: auto; }
+
+@media (min-width: 700px) {
+  .hero {
+    height: 390px;
+  }
+
+  .anime-card {
+    flex-basis: 165px;
+  }
+
+  .anime-card img {
+    height: 225px;
+  }
 }
 </style>
 </head>
 
 <body>
+
 <header>
-  <div class="topbar">
-    <div class="logo">Otaku_zone ✦</div>
-    <button class="iconbtn" onclick="showPage('settings')">⚙️</button>
-  </div>
-  <div class="searchbox">
-    <input id="search" type="search" placeholder="Rechercher un anime..." autocomplete="off">
-    <div id="suggestions" class="hidden"></div>
+  <div class="header-top">
+    <div>
+      <h1 class="logo">👑 Otaku_zone</h1>
+      <p class="tagline">TON UNIVERS ANIME</p>
+    </div>
+
+    <button class="icon-button"
+      onclick="toggleSettings()"
+      aria-label="Paramètres">⚙️</button>
   </div>
 </header>
 
-<nav>
-  <button id="nav-home" class="active" onclick="showPage('home')">🏠 Accueil</button>
-  <button id="nav-search" onclick="showPage('search')">🔎 Animes</button>
-  <button id="nav-list" onclick="showPage('list')">❤️ Ma liste</button>
-  <button id="nav-downloads" onclick="showPage('downloads')">⬇️ Téléchargements</button>
-  <button id="nav-settings" onclick="showPage('settings')">⚙️ Paramètres</button>
-</nav>
-
-<div id="status"></div>
-
 <main>
-  <section id="home">
-    <h2>🔥 Dernières sorties</h2>
-    <p class="sub">Découvre les animes récents</p>
-    <div id="latest" class="carousel"></div>
 
-    <h2>🏆 Top de la semaine</h2>
-    <div id="top" class="grid"></div>
+<section id="home">
 
-    <h2>⭐ Les classiques</h2>
-    <div id="classics" class="grid"></div>
-  </section>
+  <div class="search-box">
+    <input
+      id="search"
+      type="search"
+      placeholder="🔎 Rechercher un anime..."
+      autocomplete="off"
+    >
+    <div id="suggestions" class="suggestions"
+      style="display:none"></div>
+  </div>
 
-  <section id="searchPage" class="hidden">
+  <div id="settingsPanel" class="settings-panel">
+    <h3 style="color:var(--gold)">⚙️ Paramètres</h3>
+
+    <label>
+      Langue de l'interface :
+      <select id="language">
+        <option value="fr">Français</option>
+        <option value="en">English</option>
+      </select>
+    </label>
+
+    <label>
+      Défilement automatique :
+      <select id="autoplay">
+        <option value="yes">Activé</option>
+        <option value="no">Désactivé</option>
+      </select>
+    </label>
+
+    <button class="gold-button" onclick="saveSettings()">
+      Enregistrer
+    </button>
+
+    <p class="status">
+      La connexion à un compte personnel nécessite un système
+      de comptes sécurisé supplémentaire.
+    </p>
+  </div>
+
+  <h2>🔥 À LA UNE</h2>
+  <div id="featured" class="hero">
+    <div class="hero-overlay">
+      <span class="badge">OTAKU_ZONE</span>
+      <h2>Chargement des anime...</h2>
+      <p>Prépare-toi à découvrir ton prochain anime.</p>
+    </div>
+  </div>
+
+  <div class="section-heading">
+    <h2>🆕 Dernières sorties</h2>
+  </div>
+  <p id="latestStatus" class="status">Chargement des nouveautés...</p>
+  <div id="latest" class="anime-row"></div>
+
+  <div class="section-heading">
+    <h2>🏆 Top populaire</h2>
+  </div>
+  <p id="topStatus" class="status">Chargement du classement...</p>
+  <div id="top" class="anime-row"></div>
+
+  <div class="section-heading">
+    <h2>👑 Les classiques</h2>
+  </div>
+  <p id="classicStatus" class="status">Chargement des classiques...</p>
+  <div id="classics" class="anime-row"></div>
+
+  <section id="searchResults" style="display:none">
     <h2>🔎 Résultats de recherche</h2>
-    <div id="results" class="grid"></div>
+    <p id="resultStatus" class="status"></p>
+    <div id="results" class="anime-row"></div>
   </section>
 
-  <section id="details" class="hidden">
-    <button class="secondary" onclick="goBack()">← Retour</button>
-    <div id="detailContent"></div>
-  </section>
+</section>
 
-  <section id="listPage" class="hidden">
-    <h2>❤️ Ma liste de visionnage</h2>
-    <p class="sub">Tes animes enregistrés sur cet appareil.</p>
-    <div id="watchlist" class="grid"></div>
-  </section>
+<section id="animePage">
+  <button class="back-button" onclick="goHome()">
+    ← Retour à l'accueil
+  </button>
 
-  <section id="downloadsPage" class="hidden">
-    <h2>⬇️ Mes téléchargements</h2>
-    <p class="sub">Retrouve les liens de téléchargement que tu as enregistrés.</p>
-    <div id="downloadsList"></div>
-    <p class="sub">Otaku_zone ne télécharge pas automatiquement les épisodes. Les fichiers doivent provenir de sources autorisées.</p>
-  </section>
+  <div id="detailContent"></div>
 
-  <section id="settingsPage" class="hidden">
-    <h2>⚙️ Paramètres</h2>
+  <h2>🔗 Saisons et œuvres associées</h2>
+  <p id="relatedStatus" class="status"></p>
+  <div id="related" class="anime-row"></div>
+</section>
 
-    <div class="related">
-      <h3>👤 Compte</h3>
-      <p>La connexion à un compte n'est pas encore configurée. Ta liste est conservée localement sur cet appareil.</p>
-      <button onclick="alert('La connexion en ligne nécessite un service de compte et une base de données. Cette fonction n’est pas encore activée.')">Se connecter / Créer un compte</button>
-    </div>
-
-    <div class="related">
-      <h3>🌍 Langue</h3>
-      <div class="field">
-        <label for="language">Langue de l'interface</label>
-        <select id="language" onchange="saveSettings()">
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
-      <p class="sub">Le choix de langue est enregistré. Les descriptions peuvent nécessiter une traduction externe.</p>
-    </div>
-
-    <div class="related">
-      <h3>🎨 Affichage</h3>
-      <div class="field">
-        <label for="autoplay">Défilement automatique des nouveautés</label>
-        <select id="autoplay" onchange="saveSettings()">
-          <option value="yes">Activé</option>
-          <option value="no">Désactivé</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="related">
-      <h3>🧹 Données</h3>
-      <button class="danger" onclick="clearData()">Effacer ma liste et mes réglages</button>
-    </div>
-  </section>
 </main>
 
-<footer>Otaku_zone · Catalogue anime</footer>
+<nav class="navbar">
+  <button class="active" onclick="goHome()">🏠<br>Accueil</button>
+  <button onclick="focusSearch()">🔎<br>Recherche</button>
+  <button onclick="showFavorites()">⭐<br>Ma liste</button>
+  <button onclick="toggleSettings()">⚙️<br>Paramètres</button>
+</nav>
+
+<footer>Otaku_zone · Noir &amp; Or 👑</footer>
 
 <script>
 const API = "https://graphql.anilist.co";
 const $ = id => document.getElementById(id);
-let currentPage = "home";
-let previousPage = "home";
-let allLoaded = [];
+
+let allAnime = [];
+let currentAnime = null;
 let searchTimer;
-let carouselTimer;
+let requestId = 0;
+let autoplayTimer;
 
-const defaultSettings = { language: "fr", autoplay: "yes" };
-
-function getJSON(key, fallback) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback;
-  } catch {
-    return fallback;
+const QUERY = `
+query ($page:Int,$perPage:Int,$sort:[MediaSort],$status:MediaStatus,$startDate_greater:Int,$startDate_lesser:Int,$search:String) {
+  Page(page:$page,perPage:$perPage) {
+    pageInfo { hasNextPage }
+    media(
+      type:ANIME,
+      sort:$sort,
+      status:$status,
+      startDate_greater:$startDate_greater,
+      startDate_lesser:$startDate_lesser,
+      search:$search
+    ) {
+      id
+      title { romaji english native }
+      coverImage { large extraLarge }
+      bannerImage
+      description(asHtml:false)
+      episodes
+      seasonYear
+      format
+      status
+      genres
+      siteUrl
+    }
   }
-}
-function saveJSON(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
-}
-function getWatchlist() {
-  return getJSON("oz_watchlist", []);
-}
-function getDownloads() {
-  return getJSON("oz_downloads", []);
-}
-function getSettings() {
-  return {...defaultSettings, ...getJSON("oz_settings", {})};
-}
-function titleOf(a) {
-  return a?.title?.english || a?.title?.romaji || a?.title?.native || "Anime";
-}
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, ch => ({
-    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
-  }[ch]));
-}
-function shortDescription(value) {
-  const el = document.createElement("div");
-  el.innerHTML = value || "";
-  return el.textContent || "";
-}
-function showStatus(text) {
-  $("status").textContent = text || "";
-}
-async function queryAnime(query, variables = {}) {
+}`;
+
+async function gql(query, variables = {}) {
   const response = await fetch(API, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Accept": "application/json"
     },
-    body: JSON.stringify({query, variables})
+    body: JSON.stringify({ query, variables })
   });
-  if (!response.ok) throw new Error("Connexion au catalogue impossible");
-  const json = await response.json();
-  if (json.errors) throw new Error("Erreur du catalogue");
-  return json.data;
-}
 
-const MEDIA_FIELDS = `
- id
- title { romaji english native }
- coverImage { large extraLarge }
- description(asHtml:false)
- episodes
- status
- format
- genres
- season
- seasonYear
- averageScore
- relations {
-  edges {
-   relationType
-   node {
-    type
-    title { romaji english native }
-    format
-   }
+  if (!response.ok) {
+    throw new Error("Erreur réseau : " + response.status);
   }
- }
-`;
 
-async function fetchList(sort, perPage = 10, extra = "") {
-  const query = `
-   query($sort:[MediaSort],$perPage:Int) {
-    Page(page:1,perPage:$perPage) {
-     media(type:ANIME,sort:$sort,isAdult:false ${extra}) {
-      ${MEDIA_FIELDS}
-     }
-    }
-   }`;
-  const data = await queryAnime(query, {sort, perPage});
-  return data.Page.media;
+  const result = await response.json();
+
+  if (result.errors) {
+    throw new Error("Erreur de la base anime");
+  }
+
+  return result.data;
 }
 
-function cardHTML(a) {
-  const title = escapeHTML(titleOf(a));
-  const image = escapeHTML(a.coverImage?.large || "");
-  const score = a.averageScore ? (a.averageScore / 10).toFixed(1) : "N/A";
-  return `
-   <article class="card" onclick="openAnime(${Number(a.id)})">
-    <img src="${image}" alt="${title}" loading="lazy">
-    <div class="cardBody">
-     <h3>${title}</h3>
-     <p>⭐ ${score}/10 · ${escapeHTML(a.format || "Anime")}</p>
-     <button onclick="event.stopPropagation();toggleWatch(${Number(a.id)})">
-      ${getWatchlist().some(x=>x.id===a.id) ? "✓ Dans ma liste" : "＋ Ma liste"}
-     </button>
-    </div>
-   </article>`;
+function titleOf(anime) {
+  return anime.title?.english ||
+         anime.title?.romaji ||
+         anime.title?.native ||
+         "Anime sans titre";
 }
-function renderCards(container, items) {
-  $(container).innerHTML = items.map(cardHTML).join("") ||
-    "<p>Aucun anime à afficher.</p>";
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
 }
-function renderHero(items) {
-  $("latest").innerHTML = items.map(a => `
-   <article class="hero" onclick="openAnime(${Number(a.id)})">
-    <img src="${escapeHTML(a.coverImage?.extraLarge || a.coverImage?.large || "")}"
-      alt="${escapeHTML(titleOf(a))}" loading="lazy">
-    <div class="heroText">
-     <span class="badge">${escapeHTML(a.seasonYear || "Anime récent")}</span>
-     <h3>${escapeHTML(titleOf(a))}</h3>
-     <span>⭐ ${a.averageScore ? (a.averageScore/10).toFixed(1) : "N/A"}/10</span>
-    </div>
-   </article>`).join("");
-}
-async function loadHome() {
-  showStatus("Chargement des animes...");
+
+async function loadSection(id, statusId, variables) {
   try {
-    const [latest, top, classics] = await Promise.all([
-      fetchList(["START_DATE_DESC", "POPULARITY_DESC"], 10,
-        ', status: RELEASING'),
-      fetchList(["POPULARITY_DESC", "SCORE_DESC"], 10),
-      fetchList(["SCORE_DESC", "POPULARITY_DESC"], 10,
-        ', startDate_greater: FuzzyDateInt(19700101), startDate_lesser: FuzzyDateInt(20150101)')
-    ]);
+    const data = await gql(QUERY, {
+      page: 1,
+      perPage: 12,
+      ...variables
+    });
 
-    allLoaded = [...latest, ...top, ...classics]
-      .filter((a, i, arr) => arr.findIndex(x=>x.id===a.id)===i);
+    const list = data.Page.media || [];
+    allAnime.push(...list);
 
-    renderHero(latest.length ? latest : top);
-    renderCards("top", top);
-    renderCards("classics", classics);
+    $(id).innerHTML = list.map(anime => cardHTML(anime)).join("");
 
-    if (carouselTimer) clearInterval(carouselTimer);
-    carouselTimer = null;
+    $(statusId).textContent = list.length
+      ? list.length + " anime à découvrir"
+      : "Aucun anime disponible pour le moment.";
 
-    if (getSettings().autoplay === "yes") {
-      carouselTimer = setInterval(() => {
-        const el = $("latest");
-        if (el.scrollWidth <= el.clientWidth + el.scrollLeft + 10) {
-          el.scrollTo({left:0, behavior:"smooth"});
-        } else {
-          el.scrollBy({left:el.clientWidth * 0.8, behavior:"smooth"});
-        }
-      }, 3500);
-    }
-
-    showStatus("");
+    return list;
   } catch (error) {
-    showStatus("Impossible de charger les nouveautés. Vérifie ta connexion et actualise la page.");
+    $(statusId).textContent =
+      "Impossible de charger les anime. Vérifie ta connexion puis actualise la page.";
+
+    $(id).innerHTML = "";
+    return [];
   }
 }
 
-function hideSections() {
-  ["home","searchPage","details","listPage","downloadsPage","settingsPage"]
-    .forEach(id => $(id).classList.add("hidden"));
-  ["home","search","list","downloads","settings"].forEach(name => {
-    const btn = $("nav-"+name);
-    if (btn) btn.classList.toggle("active",
-      (name==="home" && currentPage==="home") ||
-      (name==="search" && currentPage==="search") ||
-      (name==="list" && currentPage==="list") ||
-      (name==="downloads" && currentPage==="downloads") ||
-      (name==="settings" && currentPage==="settings"));
-  });
+function cardHTML(anime) {
+  const title = titleOf(anime);
+  const image = anime.coverImage?.extraLarge ||
+                anime.coverImage?.large || "";
+
+  return `
+    <article class="anime-card"
+      onclick="openAnime(${Number(anime.id)})">
+
+      <img
+        src="${escapeHTML(image)}"
+        alt="${escapeHTML(title)}"
+        loading="lazy"
+      >
+
+      <div class="anime-info">
+        <h3>${escapeHTML(title)}</h3>
+        <p>${anime.seasonYear || "Année inconnue"}</p>
+        <button class="card-button"
+          onclick="event.stopPropagation();openAnime(${Number(anime.id)})">
+          Découvrir
+        </button>
+      </div>
+    </article>`;
 }
-function showPage(page) {
-  currentPage = page;
-  hideSections();
-  $("suggestions").classList.add("hidden");
-  if (page === "home") $("home").classList.remove("hidden");
-  if (page === "search") $("searchPage").classList.remove("hidden");
-  if (page === "list") {
-    $("listPage").classList.remove("hidden");
-    renderWatchlist();
+
+function renderFeatured(list) {
+  if (!list.length) return;
+
+  let index = 0;
+
+  function show() {
+    const anime = list[index];
+    const title = titleOf(anime);
+    const image = anime.bannerImage ||
+                  anime.coverImage?.extraLarge ||
+                  anime.coverImage?.large || "";
+
+    $("featured").innerHTML = `
+      <img src="${escapeHTML(image)}" alt="">
+      <div class="hero-overlay">
+        <span class="badge">⭐ ANIME À LA UNE</span>
+        <h2>${escapeHTML(title)}</h2>
+        <p>
+          ${anime.seasonYear || ""}
+          ${anime.episodes ? " · " + anime.episodes + " épisodes" : ""}
+        </p>
+        <button class="gold-button"
+          onclick="openAnime(${Number(anime.id)})">
+          Voir l'anime →
+        </button>
+      </div>`;
   }
-  if (page === "downloads") {
-    $("downloadsPage").classList.remove("hidden");
-    renderDownloads();
+
+  show();
+  clearInterval(autoplayTimer);
+
+  if ($("autoplay").value !== "no") {
+    autoplayTimer = setInterval(() => {
+      index = (index + 1) % list.length;
+      show();
+    }, 4500);
   }
-  if (page === "settings") {
-    $("settingsPage").classList.remove("hidden");
-    const settings = getSettings();
-    $("language").value = settings.language;
-    $("autoplay").value = settings.autoplay;
-  }
-  window.scrollTo({top:0, behavior:"smooth"});
 }
-function goBack() {
-  showPage(previousPage === "details" ? "home" : previousPage);
-}
-async function runSearch(term) {
-  if (!term.trim()) return;
-  previousPage = "search";
-  showPage("search");
-  $("results").innerHTML = "";
-  showStatus("Recherche en cours...");
-  const query = `
-   query($search:String) {
-    Page(page:1,perPage:20) {
-     media(type:ANIME,search:$search,sort:SEARCH_MATCH,isAdult:false) {
-      ${MEDIA_FIELDS}
-     }
+
+async function loadHome() {
+  const featured = await loadSection(
+    "latest",
+    "latestStatus",
+    { sort: ["TRENDING_DESC", "POPULARITY_DESC"] }
+  );
+
+  renderFeatured(featured);
+
+  await loadSection(
+    "top",
+    "topStatus",
+    { sort: ["SCORE_DESC", "POPULARITY_DESC"] }
+  );
+
+  await loadSection(
+    "classics",
+    "classicStatus",
+    {
+      sort: ["POPULARITY_DESC"],
+      startDate_lesser: 20150101
     }
-   }`;
-  try {
-    const data = await queryAnime(query, {search:term});
-    const items = data.Page.media;
-    allLoaded = [...allLoaded, ...items]
-      .filter((a,i,arr)=>arr.findIndex(x=>x.id===a.id)===i);
-    renderCards("results", items);
-    showStatus(items.length ? items.length+" résultats trouvés." : "Aucun résultat.");
-  } catch {
-    showStatus("Recherche impossible. Vérifie ta connexion.");
+  );
+}
+
+function focusSearch() {
+  goHome();
+  $("search").focus();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function goHome() {
+  $("home").style.display = "block";
+  $("animePage").style.display = "none";
+  $("searchResults").style.display = "none";
+  $("suggestions").style.display = "none";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function toggleSettings() {
+  const panel = $("settingsPanel");
+  panel.style.display =
+    panel.style.display === "block" ? "none" : "block";
+}
+
+function saveSettings() {
+  localStorage.setItem("otaku_language", $("language").value);
+  localStorage.setItem("otaku_autoplay", $("autoplay").value);
+
+  alert("Paramètres enregistrés !");
+
+  if ($("home").style.display !== "none") {
+    renderFeatured(allAnime.slice(0, 12));
   }
 }
-$("search").addEventListener("input", () => {
-  clearTimeout(searchTimer);
-  const term = $("search").value.trim();
-  const box = $("suggestions");
-  if (term.length < 1) {
-    box.classList.add("hidden");
-    return;
+
+function showFavorites() {
+  const ids = JSON.parse(localStorage.getItem("otaku_favorites") || "[]");
+  const list = ids
+    .map(id => allAnime.find(anime => anime.id === id))
+    .filter(Boolean);
+
+  $("searchResults").style.display = "block";
+  $("resultStatus").textContent = list.length
+    ? "Tes anime enregistrés"
+    : "Ta liste est vide. Ouvre un anime et ajoute-le à ta liste.";
+
+  $("results").innerHTML = list.map(anime => cardHTML(anime)).join("");
+  $("searchResults").scrollIntoView({ behavior: "smooth" });
+}
+
+function toggleFavorite(id) {
+  let ids = JSON.parse(localStorage.getItem("otaku_favorites") || "[]");
+
+  if (ids.includes(id)) {
+    ids = ids.filter(item => item !== id);
+  } else {
+    ids.push(id);
   }
-  searchTimer = setTimeout(async () => {
-    const query = `
-     query($search:String) {
-      Page(page:1,perPage:6) {
-       media(type:ANIME,search:$search,sort:SEARCH_MATCH,isAdult:false) {
-        id title { romaji english native } coverImage { large }
-       }
-      }
-     }`;
-    try {
-      const data = await queryAnime(query, {search:term});
-      const items = data.Page.media;
-      box.innerHTML = items.map(a=>`
-       <div class="suggestion" onclick="pickSuggestion(${Number(a.id)})">
-        ${escapeHTML(titleOf(a))}
-       </div>`).join("") || '<div class="suggestion">Aucun résultat</div>';
-      box.classList.remove("hidden");
-      window._suggestions = items;
-    } catch {
-      box.classList.add("hidden");
-    }
-  }, 350);
-});
-$("search").addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    $("suggestions").classList.add("hidden");
-    runSearch($("search").value);
-  }
-});
-document.addEventListener("click", e => {
-  if (!e.target.closest(".searchbox")) $("suggestions").classList.add("hidden");
-});
-function pickSuggestion(id) {
-  $("suggestions").classList.add("hidden");
-  const item = (window._suggestions || []).find(a=>a.id===id);
-  if (item) {
-    $("search").value = titleOf(item);
-    openAnime(id);
-  }
+
+  localStorage.setItem("otaku_favorites", JSON.stringify(ids));
+  openAnime(id);
 }
 
 async function openAnime(id) {
-  previousPage = currentPage === "details" ? previousPage : currentPage;
-  currentPage = "details";
-  hideSections();
-  $("details").classList.remove("hidden");
-  $("detailContent").innerHTML = "<p>Chargement des informations...</p>";
-  window.scrollTo({top:0,behavior:"smooth"});
+  let anime = allAnime.find(item => item.id === id);
 
-  const query = `
-   query($id:Int) {
-    Media(id:$id,type:ANIME) {
-     ${MEDIA_FIELDS}
+  if (!anime) {
+    try {
+      const data = await gql(`
+        query($id:Int) {
+          Media(id:$id,type:ANIME) {
+            id
+            title { romaji english native }
+            coverImage { large extraLarge }
+            bannerImage
+            description(asHtml:false)
+            episodes
+            seasonYear
+            format
+            status
+            genres
+            siteUrl
+          }
+        }`, { id });
+
+      anime = data.Media;
+      if (anime) allAnime.push(anime);
+    } catch (error) {
+      alert("Impossible d'ouvrir cet anime. Réessaie.");
+      return;
     }
-   }`;
-  try {
-    const data = await queryAnime(query, {id:Number(id)});
-    const a = data.Media;
-    const desc = shortDescription(a.description);
-    const translated = await translateText(desc);
-    const related = (a.relations?.edges || [])
-      .filter(edge=>edge.node.type==="ANIME")
-      .map(edge=>`<div class="related">
-       <strong>${escapeHTML(titleOf(edge.node))}</strong><br>
-       <span class="sub">${escapeHTML(edge.node.format || "Anime")} · ${escapeHTML(edge.relationType)}</span>
-      </div>`).join("") || "<p>Aucun contenu associé trouvé.</p>";
+  }
 
-    $("detailContent").innerHTML = `
-     <h2>${escapeHTML(titleOf(a))}</h2>
-     <img class="poster" src="${escapeHTML(a.coverImage?.large || "")}"
-      alt="${escapeHTML(titleOf(a))}">
-     <p><span class="badge">${escapeHTML(a.format || "Anime")}</span></p>
-     <p>⭐ ${a.averageScore ? (a.averageScore/10).toFixed(1) : "N/A"}/10</p>
-     <p><strong>Épisodes :</strong> ${escapeHTML(a.episodes || "Non précisé")}</p>
-     <p><strong>Statut :</strong> ${escapeHTML(a.status || "Inconnu")}</p>
-     <p><strong>Genres :</strong> ${(a.genres||[]).map(escapeHTML).join(", ")}</p>
-     <div class="clear"></div>
-     <h3>Synopsis 🇫🇷</h3>
-     <p class="description">${escapeHTML(translated || desc || "Aucune description disponible.")}</p>
-     <button onclick="toggleWatch(${Number(a.id)})">
-      ${getWatchlist().some(x=>x.id===a.id) ? "✓ Retirer de ma liste" : "❤️ Ajouter à ma liste"}
-     </button>
-     <h3>📚 Saisons, films et OAV liés</h3>
-     ${related}
-     <h3>🎬 Où regarder ?</h3>
-     <p>Consulte une plateforme officielle pour trouver cet anime.</p>
-     <p><a href="https://www.crunchyroll.com/" target="_blank" rel="noopener noreferrer">Découvrir Crunchyroll</a></p>
-    `;
-    showStatus("");
-  } catch {
-    $("detailContent").innerHTML = "<p>Impossible de charger cet anime.</p>";
+  if (!anime) return;
+  currentAnime = anime;
+
+  $("home").style.display = "none";
+  $("animePage").style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  const title = titleOf(anime);
+  const image = anime.coverImage?.extraLarge ||
+                anime.coverImage?.large || "";
+  const description = anime.description
+    ? anime.description.replace(/<[^>]*>/g, "")
+    : "Aucune description disponible.";
+
+  const favorites = JSON.parse(
+    localStorage.getItem("otaku_favorites") || "[]"
+  );
+
+  $("detailContent").innerHTML = `
+    <img class="detail-poster"
+      src="${escapeHTML(image)}"
+      alt="${escapeHTML(title)}">
+
+    <h2>${escapeHTML(title)}</h2>
+
+    <p class="detail-meta">
+      ${escapeHTML(anime.format || "Anime")}
+      ${anime.seasonYear ? " · " + anime.seasonYear : ""}
+      ${anime.episodes ? " · " + anime.episodes + " épisodes" : ""}
+    </p>
+
+    <p class="detail-description">
+      ${escapeHTML(description)}
+    </p>
+
+    <p class="detail-meta">
+      ${escapeHTML((anime.genres || []).join(" · "))}
+    </p>
+
+    <button class="gold-button"
+      onclick="toggleFavorite(${Number(anime.id)})">
+      ${favorites.includes(anime.id)
+        ? "★ Retirer de ma liste"
+        : "☆ Ajouter à ma liste"}
+    </button>
+
+    ${anime.siteUrl
+      ? `<a class="detail-link"
+           href="${escapeHTML(anime.siteUrl)}"
+           target="_blank" rel="noopener">
+           Plus d'informations
+         </a>`
+      : ""}
+  `;
+
+  loadRelated(anime);
+}
+
+async function loadRelated(anime) {
+  $("relatedStatus").textContent =
+    "Recherche des saisons, films et OAV associés...";
+
+  $("related").innerHTML = "";
+
+  try {
+    const data = await gql(`
+      query($id:Int) {
+        Media(id:$id,type:ANIME) {
+          relations {
+            edges {
+              relationType
+              node {
+                id
+                type
+                title { romaji english native }
+                coverImage { large }
+                seasonYear
+                format
+              }
+            }
+          }
+        }
+      }`, { id: anime.id });
+
+    const edges = data.Media?.relations?.edges || [];
+
+    const related = edges
+      .filter(edge =>
+        edge.node?.type === "ANIME" &&
+        edge.node.coverImage
+      )
+      .map(edge => edge.node);
+
+    allAnime.push(...related);
+
+    $("related").innerHTML = related.length
+      ? related.map(item => cardHTML(item)).join("")
+      : "";
+
+    $("relatedStatus").textContent = related.length
+      ? related.length + " œuvre(s) associée(s)"
+      : "Aucune saison ou œuvre associée trouvée.";
+  } catch (error) {
+    $("relatedStatus").textContent =
+      "Les œuvres associées sont momentanément indisponibles.";
   }
 }
 
-async function translateText(text) {
-  if (!text) return "Aucune description disponible.";
-  const settings = getSettings();
-  if (settings.language !== "fr") return text;
-  if (/[\u3040-\u30ff\u3400-\u9fff]/.test(text) && text.length < 40) return text;
+$("search").addEventListener("input", event => {
+  clearTimeout(searchTimer);
 
-  try {
-    const url = "https://api.mymemory.translated.net/get?q=" +
-      encodeURIComponent(text.slice(0,450)) + "&langpair=en|fr";
-    const response = await fetch(url);
-    const data = await response.json();
-    if (data.responseStatus === 200 && data.responseData?.translatedText) {
-      return data.responseData.translatedText;
-    }
-  } catch {}
-  return text;
-}
+  const term = event.target.value.trim();
+  $("suggestions").style.display = "none";
 
-function toggleWatch(id) {
-  const item = allLoaded.find(a=>a.id===id);
-  let list = getWatchlist();
-  if (list.some(a=>a.id===id)) {
-    list = list.filter(a=>a.id!==id);
-  } else if (item) {
-    list.push(item);
-  } else {
-    showStatus("Ouvre l'anime depuis le catalogue avant de l'ajouter.");
+  if (term.length < 1) {
+    $("searchResults").style.display = "none";
     return;
   }
-  saveJSON("oz_watchlist", list);
-  if (currentPage==="list") renderWatchlist();
-  if (currentPage==="details") openAnime(id);
-  if (currentPage==="home") loadHome();
-}
-function renderWatchlist() {
-  const items = getWatchlist();
-  $("watchlist").innerHTML = items.map(a=>`
-   <article class="card">
-    <img src="${escapeHTML(a.coverImage?.large||"")}" alt="${escapeHTML(titleOf(a))}">
-    <div class="cardBody">
-     <h3>${escapeHTML(titleOf(a))}</h3>
-     <button onclick="openAnime(${Number(a.id)})">Détails</button>
-     <button class="secondary" onclick="toggleWatch(${Number(a.id)})">Retirer</button>
-    </div>
-   </article>`).join("") || "<p>Ta liste est vide. Ajoute des animes avec le bouton ❤️.</p>";
-}
-function renderDownloads() {
-  const items = getDownloads();
-  $("downloadsList").innerHTML = items.map((item,i)=>`
-   <div class="related">
-    <strong>${escapeHTML(item.title)}</strong><br>
-    <a href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">Ouvrir le lien</a>
-    <button class="danger" onclick="removeDownload(${i})">Supprimer</button>
-   </div>`).join("") || "<p>Aucun lien enregistré.</p>";
-}
-function removeDownload(index) {
-  const items = getDownloads();
-  items.splice(index,1);
-  saveJSON("oz_downloads",items);
-  renderDownloads();
-}
-function saveSettings() {
-  saveJSON("oz_settings", {
-    language:$("language").value,
-    autoplay:$("autoplay").value
-  });
-  if (carouselTimer) clearInterval(carouselTimer);
-  carouselTimer = null;
-  if ($("autoplay").value==="yes") {
-    carouselTimer = setInterval(()=>{
-      const el=$("latest");
-      if(el.scrollWidth<=el.clientWidth+el.scrollLeft+10) el.scrollTo({left:0,behavior:"smooth"});
-      else el.scrollBy({left:el.clientWidth*.8,behavior:"smooth"});
-    },3500);
+
+  searchTimer = setTimeout(async () => {
+    try {
+      const data = await gql(QUERY, {
+        page: 1,
+        perPage: 8,
+        search: term,
+        sort: ["SEARCH_MATCH", "POPULARITY_DESC"]
+      });
+
+      const list = data.Page.media || [];
+      allAnime.push(...list);
+
+      $("suggestions").innerHTML = list.map(anime => `
+        <div class="suggestion"
+          onclick="openAnime(${Number(anime.id)})">
+          <img src="${escapeHTML(anime.coverImage?.large || "")}" alt="">
+          <span>${escapeHTML(titleOf(anime))}</span>
+        </div>
+      `).join("");
+
+      $("suggestions").style.display = list.length ? "block" : "none";
+
+      $("searchResults").style.display = "block";
+      $("resultStatus").textContent =
+        list.length + " résultat(s) trouvé(s)";
+
+      $("results").innerHTML = list.map(anime => cardHTML(anime)).join("");
+    } catch (error) {
+      $("resultStatus").textContent =
+        "Recherche indisponible. Vérifie ta connexion.";
+      $("searchResults").style.display = "block";
+    }
+  }, 350);
+});
+
+document.addEventListener("click", event => {
+  if (!event.target.closest(".search-box")) {
+    $("suggestions").style.display = "none";
   }
-  showStatus("Paramètres enregistrés.");
-}
-function clearData() {
-  if (!confirm("Effacer ta liste et tes paramètres ?")) return;
-  localStorage.removeItem("oz_watchlist");
-  localStorage.removeItem("oz_downloads");
-  localStorage.removeItem("oz_settings");
-  showPage("home");
-  showStatus("Données effacées.");
-}
-showPage("home");
+});
+
+$("language").value =
+  localStorage.getItem("otaku_language") || "fr";
+
+$("autoplay").value =
+  localStorage.getItem("otaku_autoplay") || "yes";
+
 loadHome();
 </script>
+
 </body>
-</html>
+  </html>
