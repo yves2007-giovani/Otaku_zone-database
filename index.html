@@ -2,231 +2,350 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#000000">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080808">
 <title>OTAKU_ZONE</title>
 
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080808;color:#fff;font-family:Arial,sans-serif}
-header{padding:20px;text-align:center;border-bottom:2px solid #d4af37}
-h1{color:#d4af37;margin:0 0 15px}
-input,button{padding:12px;border-radius:7px;border:1px solid #d4af37}
-input{width:100%;background:#171717;color:white}
-button{background:#d4af37;color:#000;font-weight:bold;cursor:pointer;margin:4px}
-main{padding:15px;max-width:1000px;margin:auto}
-#catalogue{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.card{background:#171717;padding:10px;border-radius:9px;cursor:pointer}
-.card img{width:100%;height:220px;object-fit:cover;border-radius:6px}
-.card h3{font-size:14px}
-#details{margin-top:20px}
-#episodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-#episodes button{margin:0;padding:10px 3px}
-video{width:100%;max-height:450px;background:#000;margin-top:12px}
-a{color:#d4af37}
-.hidden{display:none}
-@media(min-width:650px){
-#catalogue{grid-template-columns:repeat(5,minmax(0,1fr))}
-#episodes{grid-template-columns:repeat(8,minmax(0,1fr))}
-}
+body{margin:0;background:#080808;color:white;font-family:Arial,sans-serif}
+header{background:#111;padding:18px;border-bottom:2px solid #d6a400}
+.logo{font-size:27px;font-weight:bold;color:#e8b800}
+nav{display:flex;gap:10px;margin-top:15px;flex-wrap:wrap}
+button{padding:10px 14px;border:0;border-radius:5px;background:#d6a400;color:#111;font-weight:bold;cursor:pointer}
+input{width:100%;padding:13px;margin-top:15px;background:#1b1b1b;color:white;border:1px solid #444;border-radius:6px}
+main{padding:15px}
+h2{color:#e8b800}
+#catalogue{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:13px}
+.card{background:#151515;border-radius:8px;overflow:hidden;cursor:pointer}
+.card img{width:100%;height:190px;object-fit:cover;background:#222}
+.card p{font-weight:bold;font-size:14px;padding:8px;margin:0}
+.small{font-size:12px;color:#aaa;padding:0 8px 10px}
+#details{display:none;background:#151515;padding:15px;border-radius:8px;margin-bottom:20px}
+#details img{width:130px;max-height:190px;object-fit:cover;float:left;margin:0 15px 10px 0}
+#details:after{content:"";display:block;clear:both}
+.episode{display:inline-block;background:#292929;padding:10px;margin:4px;border-radius:5px}
+article{padding:12px;margin:10px 0;background:#151515;border-radius:6px}
+a{color:#e8b800}
+#status{color:#aaa;font-size:13px}
+footer{text-align:center;color:#888;padding:25px}
 </style>
 </head>
 
 <body>
 <header>
-<h1>OTAKU_ZONE</h1>
-<input id="search" placeholder="Rechercher un animé..." autocomplete="off">
-<button onclick="searchAnime()">RECHERCHER</button>
+  <div class="logo">OTAKU_ZONE</div>
+  <nav>
+    <button onclick="showSection('catalogueSection')">ANIMÉS</button>
+    <button onclick="showSection('newsSection');loadNews()">ACTUALITÉS</button>
+  </nav>
+  <input id="search" placeholder="Rechercher un animé..." oninput="searchAnime()">
+  <button onclick="searchJikan()" style="margin-top:10px;width:100%">
+    RECHERCHER AVEC JIKAN
+  </button>
 </header>
 
 <main>
-<div id="message"></div>
-<div id="catalogue"></div>
+  <p id="status">Chargement du catalogue...</p>
 
-<section id="details" class="hidden">
-<h2 id="animeTitle"></h2>
-<div id="seasons"></div>
-<h3>Épisodes</h3>
-<div id="episodes"></div>
+  <section id="details"></section>
 
-<video id="player" controls playsinline></video>
-<p id="videoMessage"></p>
-<a id="download" class="hidden" href="#" download>Télécharger l'épisode</a>
-</section>
+  <section id="catalogueSection">
+    <h2>Catalogue anime</h2>
+    <div id="catalogue"></div>
+    <button id="more" onclick="loadMore()" style="display:none;margin-top:20px">
+      Voir plus
+    </button>
+  </section>
+
+  <section id="newsSection" style="display:none">
+    <h2>Actualités anime</h2>
+    <div id="news">L'API d'actualités doit être hébergée pour fonctionner.</div>
+  </section>
 </main>
 
+<footer>OTAKU_ZONE · Ton univers anime</footer>
+
 <script>
-const API="https://graphql.anilist.co";
-const JSON_URL="https://raw.githubusercontent.com/yves2007-giovani/Otaku_zone-database/main/episodes.json";
+const INDEX_URL =
+"https://cdn.jsdelivr.net/gh/subhajeetch-fl/anime-mapper@main/data/anime-index.json";
 
-let database={animes:[]};
-let currentAnime=null;
-let currentSeason=null;
+const NEWS_API_URL = "";
 
-async function loadDatabase(){
-  try{
-    const response=await fetch(JSON_URL+"?t="+Date.now());
-    if(!response.ok) throw new Error();
-    database=await response.json();
-  }catch(e){
-    database={animes:[]};
-    document.getElementById("message").textContent=
-      "Impossible de charger episodes.json.";
-  }
+let allAnime = [];
+let shownAnime = [];
+let displayed = 0;
+const PAGE_SIZE = 40;
+
+function showSection(id){
+  document.getElementById("catalogueSection").style.display =
+    id==="catalogueSection"?"block":"none";
+  document.getElementById("newsSection").style.display =
+    id==="newsSection"?"block":"none";
+  document.getElementById("details").style.display="none";
+  document.getElementById("search").style.display =
+    id==="catalogueSection"?"block":"none";
 }
 
-async function searchAnime(){
-  const query=document.getElementById("search").value.trim();
-  if(!query)return;
+function getTitle(a){
+  return a.title || a.romajiTitle || a.englishTitle ||
+         a.nativeTitle || "Anime sans titre";
+}
 
-  const catalogue=document.getElementById("catalogue");
-  catalogue.innerHTML="Recherche en cours...";
-  document.getElementById("details").classList.add("hidden");
+function getId(a){
+  return a.id || a.malId || a.mal_id;
+}
 
+function getImage(a){
+  return a.image || a.imageUrl || a.poster || a.coverImage ||
+    a.images?.jpg?.large_image_url ||
+    a.images?.jpg?.image_url || "";
+}
+
+async function loadCatalog(){
   try{
-    const response=await fetch(API,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        query:`query ($search:String) {
-          Page(page:1,perPage:20) {
-            media(search:$search,type:ANIME,sort:POPULARITY_DESC) {
-              id
-              title { romaji english }
-              coverImage { large }
-              episodes
-              description(asHtml:false)
-            }
-          }
-        }`,
-        variables:{search:query}
-      })
-    });
+    const response=await fetch(INDEX_URL);
+    if(!response.ok)throw new Error("Catalogue indisponible");
 
     const data=await response.json();
-    const animes=data.data.Page.media;
-    catalogue.innerHTML="";
 
-    if(!animes.length){
-      catalogue.textContent="Aucun animé trouvé.";
-      return;
-    }
+    allAnime=Array.isArray(data)?data:
+      data.data||data.anime||data.items||[];
 
-    animes.forEach(anime=>{
-      const card=document.createElement("div");
-      card.className="card";
+    if(!allAnime.length)throw new Error("Format inconnu");
 
-      const img=document.createElement("img");
-      img.src=anime.coverImage.large;
-      img.alt="Affiche de "+(anime.title.english||anime.title.romaji);
+    allAnime.sort((a,b)=>getTitle(a).localeCompare(getTitle(b)));
+    shownAnime=allAnime;
+    renderAnime(true);
 
-      const title=document.createElement("h3");
-      title.textContent=anime.title.english||anime.title.romaji;
-
-      card.append(img,title);
-      card.onclick=()=>openAnime(anime);
-      catalogue.appendChild(card);
-    });
-  }catch(e){
-    catalogue.textContent="Erreur de connexion. Réessaie.";
+    document.getElementById("status").textContent=
+      allAnime.length+" animés disponibles";
+  }catch(error){
+    document.getElementById("status").textContent=
+      "Catalogue indisponible. Tu peux essayer la recherche Jikan.";
+    console.error(error);
   }
 }
 
-function openAnime(anime){
-  currentAnime=anime;
-  currentSeason=null;
+function renderAnime(reset=false){
+  const container=document.getElementById("catalogue");
 
-  document.getElementById("details").classList.remove("hidden");
-  document.getElementById("animeTitle").textContent=
-    anime.title.english||anime.title.romaji;
+  if(reset){
+    container.innerHTML="";
+    displayed=0;
+  }
 
-  const saved=database.animes.find(a=>
-    Number(a.anilistId)===Number(anime.id)
+  const batch=shownAnime.slice(displayed,displayed+PAGE_SIZE);
+
+  batch.forEach(anime=>{
+    const card=document.createElement("div");
+    card.className="card";
+
+    const img=document.createElement("img");
+    img.loading="lazy";
+    img.src=getImage(anime);
+    img.alt=getTitle(anime);
+    img.onerror=()=>img.style.display="none";
+
+    const title=document.createElement("p");
+    title.textContent=getTitle(anime);
+
+    const info=document.createElement("div");
+    info.className="small";
+    info.textContent=anime.year||anime.type||"";
+
+    card.append(img,title,info);
+    card.onclick=()=>openAnime(anime);
+    container.appendChild(card);
+  });
+
+  displayed+=batch.length;
+
+  document.getElementById("more").style.display=
+    displayed<shownAnime.length?"block":"none";
+}
+
+function loadMore(){renderAnime()}
+
+function searchAnime(){
+  const query=document.getElementById("search").value.trim().toLowerCase();
+
+  shownAnime=allAnime.filter(a=>
+    [a.title,a.romajiTitle,a.nativeTitle,a.englishTitle]
+    .some(t=>String(t||"").toLowerCase().includes(query))
   );
 
-  const seasons=document.getElementById("seasons");
-  seasons.innerHTML="";
+  renderAnime(true);
+}
 
-  if(!saved||!saved.seasons||!saved.seasons.length){
-    seasons.textContent=
-      "Aucun épisode enregistré pour cet animé dans episodes.json.";
-    document.getElementById("episodes").innerHTML="";
-    stopPlayer();
+async function searchJikan(){
+  const query=document.getElementById("search").value.trim();
+  if(!query){
+    alert("Écris le nom d'un animé.");
     return;
   }
 
-  saved.seasons.forEach(season=>{
-    const btn=document.createElement("button");
-    btn.textContent=season.title||"Saison "+season.number;
-    btn.onclick=()=>showSeason(saved,season);
-    seasons.appendChild(btn);
-  });
+  const status=document.getElementById("status");
+  const container=document.getElementById("catalogue");
 
-  showSeason(saved,saved.seasons[0]);
+  status.textContent="Recherche Jikan en cours...";
+  container.innerHTML="";
+
+  try{
+    const response=await fetch(
+      "https://api.jikan.moe/v4/anime?q="+
+      encodeURIComponent(query)+"&limit=20"
+    );
+
+    if(response.status===429){
+      throw new Error("Trop de requêtes. Attends quelques secondes.");
+    }
+    if(!response.ok)throw new Error("Erreur de l'API Jikan.");
+
+    const result=await response.json();
+
+    shownAnime=(result.data||[]).map(a=>({
+      id:a.mal_id,
+      title:a.title,
+      englishTitle:a.title_english,
+      nativeTitle:a.title_japanese,
+      image:a.images?.jpg?.large_image_url,
+      synopsis:a.synopsis,
+      episodes:a.episodes,
+      year:a.year,
+      type:a.type,
+      genres:a.genres
+    }));
+
+    displayed=0;
+    renderAnime(true);
+    status.textContent=shownAnime.length+
+      " résultats trouvés avec Jikan.";
+
+    document.getElementById("details").style.display="none";
+  }catch(error){
+    status.textContent=error.message;
+  }
 }
 
-function showSeason(anime,season){
-  currentAnime=anime;
-  currentSeason=season;
-
-  const grid=document.getElementById("episodes");
-  grid.innerHTML="";
-
-  (season.episodes||[]).forEach(ep=>{
-    const btn=document.createElement("button");
-    btn.textContent="Ép. "+ep.number;
-    btn.onclick=()=>playEpisode(ep);
-    grid.appendChild(btn);
-  });
-
-  stopPlayer();
+function getBucket(id){
+  const n=Number(id);
+  if(n>=1000000)return "other";
+  return String(Math.floor(n/1000)).padStart(3,"0");
 }
 
-function stopPlayer(){
-  const player=document.getElementById("player");
-  player.pause();
-  player.removeAttribute("src");
-  player.load();
+async function openAnime(anime){
+  const details=document.getElementById("details");
+  details.style.display="block";
+  details.innerHTML="<p>Chargement de la fiche...</p>";
+  details.scrollIntoView({behavior:"smooth"});
 
-  document.getElementById("download").classList.add("hidden");
-  document.getElementById("videoMessage").textContent="";
+  let record=anime;
+  const id=getId(anime);
+
+  // Récupère la fiche complète depuis Anime Mapper si possible.
+  try{
+    if(id){
+      const url=
+      "https://cdn.jsdelivr.net/gh/subhajeetch-fl/anime-mapper@main/data/anime/"+
+      getBucket(id)+"/"+id+".json";
+
+      const response=await fetch(url);
+      if(response.ok)record=await response.json();
+    }
+  }catch(error){
+    console.log("Fiche Anime Mapper indisponible.");
+  }
+
+  details.innerHTML="";
+
+  const img=document.createElement("img");
+  img.src=getImage(record)||getImage(anime);
+  img.onerror=()=>img.style.display="none";
+
+  const title=document.createElement("h2");
+  title.textContent=getTitle(record)||getTitle(anime);
+
+  const metadata=document.createElement("p");
+  metadata.textContent=[
+    record.year||anime.year||"",
+    record.type||anime.type||"",
+    record.episodes!=null?record.episodes+" épisodes":""
+  ].filter(Boolean).join(" · ");
+
+  const synopsis=document.createElement("p");
+  synopsis.textContent=record.synopsis||record.description||
+    anime.synopsis||"Résumé indisponible.";
+
+  details.append(img,title,metadata,synopsis);
+
+  const genres=record.genres||anime.genres||[];
+  if(genres.length){
+    const genre=document.createElement("p");
+    genre.textContent="Genres : "+genres.map(g=>
+      typeof g==="string"?g:g.name
+    ).join(", ");
+    details.appendChild(genre);
+  }
+
+  const heading=document.createElement("h3");
+  heading.textContent="Épisodes";
+  details.appendChild(heading);
+
+  const note=document.createElement("p");
+  note.textContent=
+    "Les vidéos ne sont pas fournies par Jikan ni Anime Mapper. Les liens autorisés doivent être ajoutés séparément.";
+  details.appendChild(note);
 }
 
-function playEpisode(ep){
-  stopPlayer();
+async function loadNews(){
+  const container=document.getElementById("news");
 
-  if(!ep.url){
-    document.getElementById("videoMessage").textContent=
-      "Lien vidéo manquant pour cet épisode.";
+  if(!NEWS_API_URL){
+    container.textContent=
+      "L'API d'actualités doit être hébergée et son adresse ajoutée au code.";
     return;
   }
 
-  const player=document.getElementById("player");
-  player.src=ep.url;
-  player.load();
-  player.play().catch(()=>{
-    document.getElementById("videoMessage").textContent=
-      "Lecture impossible. La source peut être incompatible ou le lien expiré.";
-  });
+  container.textContent="Chargement des actualités...";
 
-  const download=document.getElementById("download");
+  try{
+    const response=await fetch(NEWS_API_URL);
+    if(!response.ok)throw new Error("Erreur API");
 
-  // Le téléchargement dépend des autorisations du serveur vidéo.
-  // Ce bouton ne contourne pas les restrictions de la source.
-  if(ep.downloadUrl){
-    download.href=ep.downloadUrl;
-    download.classList.remove("hidden");
-  }else{
-    document.getElementById("videoMessage").textContent=
-      "La lecture est tentée. Aucun lien de téléchargement autorisé n'est configuré.";
+    const result=await response.json();
+    const articles=result.data||[];
+    container.innerHTML="";
+
+    articles.forEach(article=>{
+      const item=document.createElement("article");
+      const title=document.createElement("h3");
+      title.textContent=article.title||"Actualité";
+
+      const excerpt=document.createElement("p");
+      excerpt.textContent=article.excerpt||"";
+
+      item.append(title,excerpt);
+
+      if(article.url){
+        const link=document.createElement("a");
+        link.href=article.url;
+        link.target="_blank";
+        link.rel="noopener noreferrer";
+        link.textContent="Lire l'article";
+        item.appendChild(link);
+      }
+
+      container.appendChild(item);
+    });
+
+    if(!articles.length)container.textContent="Aucune actualité disponible.";
+  }catch(error){
+    container.textContent="Impossible de charger les actualités.";
   }
 }
 
-document.getElementById("search").addEventListener("keydown",e=>{
-  if(e.key==="Enter")searchAnime();
-});
-
-loadDatabase();
+loadCatalog();
 </script>
 </body>
 </html>
